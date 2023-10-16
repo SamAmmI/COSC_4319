@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 //This file is for abstraction and easily keeping the app looking consistent
-
 ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
-  appBarTheme: const AppBarTheme(
-    backgroundColor: Colors.grey,
+  appBarTheme: AppBarTheme(
+    backgroundColor: Colors.grey[700],
   ),
   colorScheme: ColorScheme.light(
     background: Colors.white,
     primary: Colors.black,
-    secondary: Colors.grey,
-    tertiary: Colors.grey,
+    secondary: Colors.grey[700]!,
+    tertiary: Colors.grey[200]!,
   ),
   textButtonTheme: TextButtonThemeData(
-    style: TextButton.styleFrom(foregroundColor: Colors.grey)
+    style: TextButton.styleFrom(foregroundColor: Colors.grey[800])
   )
 );
 

@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pantree/components/button.dart';
-import 'package:pantree/components/text_field.dart';
+import 'package:testapp/components/button.dart';
+import 'package:testapp/components/text_field.dart';
 
 class LoginPage extends StatefulWidget {
   final Function()? onTap;
@@ -35,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -43,8 +43,8 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children:[
-                Text("Welcome back to Pantree, please sign in",
-                style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+                const Text("Welcome back to Pantree, please sign in", 
+                style: TextStyle(color: Colors.white)),
                 const SizedBox(height: 10,),
                 MyTextField(
                   controller: emailTextController, 
@@ -59,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 MyButton(
                   onTap: signIn, 
-                  text: "Log In",
+                  text: "Log In"
                 ),
                 const SizedBox(height: 4),
 
@@ -68,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: const Text("Register here",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                         color: Colors.blue
+                        color: Colors.blue
                       )
                   )
                 )

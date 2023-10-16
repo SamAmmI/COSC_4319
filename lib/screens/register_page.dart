@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pantree/components/button.dart';
-import 'package:pantree/components/text_field.dart';
-import 'package:pantree/screens/second_reg_page.dart';
+import 'package:testapp/components/button.dart';
+import 'package:testapp/components/text_field.dart';
 
 class RegisterPage extends StatefulWidget {
   final Function()? onTap;
@@ -24,8 +23,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final lastNameTextController = TextEditingController();
   
   //signUp() attempts to sign the user in
-  //Random comment to make a change to upload to github
-  void nextPage() async{
+  void signUp() async{
     //Display an error if the passwords do not match
     if(passTextController.text != confirmPassTextController.text){
       Navigator.pop(context);
@@ -51,13 +49,14 @@ class _RegisterPageState extends State<RegisterPage> {
           'password': passTextController.text,
         });
         //If the registration was successful, 
-        //then the app proceeds to the next part of registration
+        //then the app goes back to the login_or_register file
+        //and proceeds from there
         if(context.mounted){
           Navigator.pop(context);
         }
     }on FirebaseAuthException {
       //Display an error if registration fails (Has not been implemented yet)
-        
+        Navigator.pop(context);
         
     }
   }
@@ -76,7 +75,7 @@ class _RegisterPageState extends State<RegisterPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children:[
-                Text("Welcome to Pantree, please create an account", 
+                Text("Welcome back to Pantree, please create an account", 
                 style: TextStyle(color: Theme.of(context).colorScheme.primary)),
                 const SizedBox(height: 10,),
                 MyTextField(
@@ -107,15 +106,15 @@ class _RegisterPageState extends State<RegisterPage> {
                 const SizedBox(height: 10,),
 
                 MyButton(
-                  onTap: nextPage, 
-                  text: "Next"
+                  onTap: signUp, 
+                  text: "Sign Up"
                 ),
                 GestureDetector(
                   onTap: widget.onTap,
                   child: Text("Sign in Here",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.blue
+                        color: Theme.of(context).primaryColor
                       )
                       
                   )
