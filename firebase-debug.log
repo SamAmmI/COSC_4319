@@ -1,0 +1,37 @@
+[debug] [2023-10-13T15:03:23.007Z] ----------------------------------------------------------------------
+[debug] [2023-10-13T15:03:23.009Z] Command:       /usr/local/bin/firebase /Users/danielwarren/.cache/firebase/tools/lib/node_modules/firebase-tools/lib/bin/firebase projects:list --json
+[debug] [2023-10-13T15:03:23.017Z] CLI Version:   12.6.2
+[debug] [2023-10-13T15:03:23.017Z] Platform:      darwin
+[debug] [2023-10-13T15:03:23.017Z] Node Version:  v16.16.0
+[debug] [2023-10-13T15:03:23.019Z] Time:          Fri Oct 13 2023 10:03:23 GMT-0500 (Central Daylight Time)
+[debug] [2023-10-13T15:03:23.019Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-10-13T15:03:23.030Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-10-13T15:03:23.031Z] > authorizing via signed-in user (danielwarren875@gmail.com)
+[debug] [2023-10-13T15:03:23.043Z] > refreshing access token with scopes: []
+[debug] [2023-10-13T15:03:23.047Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2023-10-13T15:03:23.047Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2023-10-13T15:03:25.920Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2023-10-13T15:03:25.920Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2023-10-13T15:03:26.007Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=1000
+[debug] [2023-10-13T15:03:29.653Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2023-10-13T15:03:29.653Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[info] ┌────────────────────────┬──────────────────────────────┬────────────────┬──────────────────────┐
+│ Project Display Name   │ Project ID                   │ Project Number │ Resource Location ID │
+├────────────────────────┼──────────────────────────────┼────────────────┼──────────────────────┤
+│ FlutterFire-UI-Codelab │ flutterfire-ui-codelab-119d1 │ 215200908261   │ [Not specified]      │
+├────────────────────────┼──────────────────────────────┼────────────────┼──────────────────────┤
+│ MessageApp             │ messageapp-48c62             │ 600398706734   │ [Not specified]      │
+├────────────────────────┼──────────────────────────────┼────────────────┼──────────────────────┤
+│ Pantree                │ pantree-cbf1c                │ 453486053605   │ [Not specified]      │
+├────────────────────────┼──────────────────────────────┼────────────────┼──────────────────────┤
+│ walltutorial           │ walltutorial-304c6           │ 692249119957   │ [Not specified]      │
+└────────────────────────┴──────────────────────────────┴────────────────┴──────────────────────┘
+[info] 
+[info] 4 project(s) total.
+[debug] [2023-10-13T15:03:36.285Z] Error: Timed out.
+    at Timeout.<anonymous> (/Users/danielwarren/.cache/firebase/tools/lib/node_modules/firebase-tools/lib/utils.js:254:49)
+    at listOnTimeout (node:internal/timers:559:17)
+    at processTimers (node:internal/timers:502:7)
+[error] 
+[error] Error: An unexpected error has occurred.
