@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pantree/components/drawer.dart';
-import 'package:pantree/screens/add_food_screen.dart'; // Import AddFoodScreen Class
-import 'package:pantree/models/food_item.dart'; // Import the FoodItem class
+import 'package:testapp/components/drawer.dart';
+import 'package:testapp/screens/add_food_screen.dart'; // Import AddFoodScreen Class
+import 'package:testapp/models/food_item.dart'; // Import the FoodItem class
 
 class FoodInventoryScreen extends StatelessWidget {
   final List<FoodItem> foodItems;
@@ -15,15 +15,12 @@ class FoodInventoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Food Inventory',
-          style: TextStyle(color: Theme.of(context).colorScheme.primary),
-        ),
+        title: const Text('Food Inventory'),
       ),
       drawer: MyDrawer(
         onSignOutTap: (){},
         onFoodInventoryTap: (){},
         onNutritionTap: (){},
-        onSettingsTap: (){},
 
       ),
       body: ListView.builder(

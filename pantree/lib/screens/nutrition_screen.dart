@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pantree/components/drawer.dart';
+import 'package:testapp/components/drawer.dart';
 
 class nutrition_screen extends StatefulWidget {
   const nutrition_screen({super.key});
@@ -13,15 +13,12 @@ class _nutrition_screenState extends State<nutrition_screen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Nutrition",
-        style: TextStyle(color: Theme.of(context).colorScheme.primary)
-        ),
+        title: const Text("Nutrition"),
       ),
       drawer: MyDrawer(
         onSignOutTap: (){},
         onFoodInventoryTap: (){},
         onNutritionTap: (){},
-        onSettingsTap: (){},
       ),
     );
   }

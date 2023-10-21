@@ -1,7 +1,7 @@
-#Sun Oct 22 00:45:57 CDT 2023
-base.0=D\:\\Flutter\\Working Main\\COSC_4319-main\\COSC_4319-main\\pantree\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
-base.1=D\:\\Flutter\\Working Main\\COSC_4319-main\\COSC_4319-main\\pantree\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes2.dex
-base.2=D\:\\Flutter\\Working Main\\COSC_4319-main\\COSC_4319-main\\pantree\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes3.dex
+#Thu Oct 19 13:24:37 CDT 2023
+base.0=/Users/kkwillijr/Documents/pantree/build/app/intermediates/dex/debug/mergeDexDebug/classes.dex
+base.1=/Users/kkwillijr/Documents/pantree/build/app/intermediates/dex/debug/mergeDexDebug/classes2.dex
+base.2=/Users/kkwillijr/Documents/pantree/build/app/intermediates/dex/debug/mergeDexDebug/classes3.dex
 path.0=classes.dex
 path.1=classes2.dex
 path.2=classes3.dex

@@ -51,8 +51,6 @@ androidx/annotation/PluralsRes.class
 androidx/annotation/Px.class
 androidx/annotation/RawRes.class
 androidx/annotation/RequiresApi.class
-androidx/annotation/RequiresExtension$Container.class
-androidx/annotation/RequiresExtension.class
 androidx/annotation/RequiresFeature.class
 androidx/annotation/RequiresPermission$Read.class
 androidx/annotation/RequiresPermission$Write.class

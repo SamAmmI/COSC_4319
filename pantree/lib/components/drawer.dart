@@ -1,21 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pantree/components/list_tile.dart';
-import 'package:pantree/screens/food_inventory_screen.dart';
-import 'package:pantree/screens/nutrition_screen.dart';
-import 'package:pantree/screens/settings_screen.dart';
+import 'package:testapp/components/list_tile.dart';
+import 'package:testapp/screens/food_inventory_screen.dart';
+import 'package:testapp/screens/nutrition_screen.dart';
 
 class MyDrawer extends StatefulWidget {
   final Function()? onSignOutTap;
   final Function()? onNutritionTap;
   final Function()? onFoodInventoryTap;
-  final Function()? onSettingsTap;
   const MyDrawer({
     super.key,
     required this.onSignOutTap,
     required this.onNutritionTap,
-    required this.onFoodInventoryTap,
-    required this.onSettingsTap,
+    required this.onFoodInventoryTap
   });
 
   @override
@@ -44,15 +41,6 @@ class _MyDrawerState extends State<MyDrawer> {
     );
   }
 
-  void settingsScreen(){
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const settings_screen(),
-      )
-    );
-  }
-
 
 
   @override
@@ -78,14 +66,6 @@ class _MyDrawerState extends State<MyDrawer> {
                   icon: Icons.list, 
                   text: "Food Inventory", 
                   onTap: foodInventory
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 1),
-                child: MyListTile(
-                icon: Icons.settings,
-                text: "Settings",
-                onTap: settingsScreen
                 ),
               ),
               MyListTile(
