@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:testapp/models/food_item.dart'; //food item class
+import 'package:pantree/models/food_item.dart'; //food item class
 
 class AddFoodScreen extends StatelessWidget {
   final List<FoodItem> foodItems;
@@ -14,7 +14,9 @@ class AddFoodScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Food Item'),
+        title: Text('Add Food Item',
+          style: TextStyle(color: Theme.of(context).colorScheme.primary)
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

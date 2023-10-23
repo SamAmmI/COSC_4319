@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:testapp/auth/login_or_register.dart';
-import 'package:testapp/screens/food_inventory_screen.dart';
+import 'package:pantree/auth/login_or_register.dart';
+import 'package:pantree/screens/food_inventory_screen.dart';
 
 
 class AuthPage extends StatefulWidget {
