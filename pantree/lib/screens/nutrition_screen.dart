@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pantree/components/drawer.dart';
+import 'package:pantree/screens/log_meal.dart';
+import 'package:pantree/screens/nutritional_preferences.dart';
 
 class nutrition_screen extends StatefulWidget {
   const nutrition_screen({super.key});
@@ -24,28 +26,37 @@ class _nutrition_screenState extends State<nutrition_screen> {
         padding:const EdgeInsets.all(16),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Hello, ", //"Hello, ${userName ?? 'User'}", TO GET THE USERNAME LATER
+            Text("Hello, ", //"Hello, ${userName ?? 'User'}", TO GET THE USERNAME FROM DB
               style: TextStyle(
                 color: Theme.of(context).colorScheme.primary,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 20),
-            Divider(),
-            SizedBox(height: 20),
-            Text("Daily Overview",
-              style:TextStyle(
+            const SizedBox(height: 20),
+            const Divider(),
+            const SizedBox(height: 20),
+            const Text("Daily Overview",
+                style: TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10), // space between overview and card
             
-            Card(
+            // (1) CARD CONTAINING USER CONSUMPTION DETAILS BELOW
+            InkWell(
+              onTap: (){
+                //HERE I NEED TO CREATE SCREEN THAT SHOWS USER CONSUMPTION SO FAR IN THE DAY
+              },
+              child: Card(
               elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15), 
+              ),
+              color: Colors.yellow,
               child: Padding(
-                padding: (const EdgeInsets.all(16)),
+                padding: (EdgeInsets.all(16)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -56,6 +67,68 @@ class _nutrition_screenState extends State<nutrition_screen> {
                   ],
                 ),
               ),
+            ),
+            ),
+            
+            // Spacer between card and buttons
+            const SizedBox(height: 20), 
+            
+            // ROW OF BUTTONS THAT WILL LEAD TO 'log_meal' or 'nutritional preferences'
+            Row(
+              children: [
+                // (2) LOG MEAL BUTTON
+                Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const log_meal()), 
+                      );
+                    },
+                    child: Container(
+                      height: 100, 
+                      decoration: BoxDecoration(
+                        color: Colors.green, 
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'Log a Meal',
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 20),
+
+                // (3) NUTRITIONAL PREFERENCES BUTTON
+                Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const nutritional_preferences()), 
+                      );
+                    },
+                    child: Container(
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.orange,
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'Nutritional Preferences',
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
