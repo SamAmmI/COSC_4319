@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pantree/components/drawer.dart';
 import 'package:pantree/screens/log_meal.dart';
 import 'package:pantree/screens/nutritional_preferences.dart';
+import 'package:pantree/screens/daily_consumption.dart';
 
 class nutrition_screen extends StatefulWidget {
   const nutrition_screen({super.key});
@@ -26,7 +27,7 @@ class _nutrition_screenState extends State<nutrition_screen> {
         padding:const EdgeInsets.all(16),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Hello, ", //"Hello, ${userName ?? 'User'}", TO GET THE USERNAME FROM DB
+            Text("Hello, 'userName' ", //"Hello, ${userName ?? 'User'}", TO GET THE USERNAME FROM DB
               style: TextStyle(
                 color: Theme.of(context).colorScheme.primary,
                 fontSize: 20,
@@ -47,7 +48,9 @@ class _nutrition_screenState extends State<nutrition_screen> {
             // (1) CARD CONTAINING USER CONSUMPTION DETAILS BELOW
             InkWell(
               onTap: (){
-                //HERE I NEED TO CREATE SCREEN THAT SHOWS USER CONSUMPTION SO FAR IN THE DAY
+                Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => const DailyConsumptionScreen()),
+                );
               },
               child: Card(
               elevation: 2,
@@ -55,12 +58,16 @@ class _nutrition_screenState extends State<nutrition_screen> {
                 borderRadius: BorderRadius.circular(15), 
               ),
               color: Colors.yellow,
-              child: Padding(
+              child: const Padding(
                 padding: (EdgeInsets.all(16)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Calories Consumed: consumed/goal"), // You can replace placeholder with actual data.
+                    Text("Calories Consumed: 'currentValue'",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold
+                    ),), 
                     Text("Proteins: consumed/goal"),
                     Text("Carbs: consumed/goal"),
                     Text("Fats: consumed/goal"),
@@ -82,7 +89,7 @@ class _nutrition_screenState extends State<nutrition_screen> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const log_meal()), 
+                        MaterialPageRoute(builder: (context) => const LogMeal()), 
                       );
                     },
                     child: Container(
@@ -93,7 +100,7 @@ class _nutrition_screenState extends State<nutrition_screen> {
                       ),
                       child: const Center(
                         child: Text(
-                          'Log a Meal',
+                          'Log Food',
                           style: TextStyle(color: Colors.white, fontSize: 18),
                           textAlign: TextAlign.center,
                         ),

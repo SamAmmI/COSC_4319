@@ -128,6 +128,12 @@
       "languageVersion": "3.0"
     },
     {
+      "name": "http",
+      "rootUri": "file:///Users/johnny/.pub-cache/hosted/pub.dev/http-1.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "http_parser",
       "rootUri": "file:///Users/johnny/.pub-cache/hosted/pub.dev/http_parser-4.0.2",
       "packageUri": "lib/",
@@ -172,6 +178,12 @@
     {
       "name": "path",
       "rootUri": "file:///Users/johnny/.pub-cache/hosted/pub.dev/path-1.8.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "pie_chart",
+      "rootUri": "file:///Users/johnny/.pub-cache/hosted/pub.dev/pie_chart-5.3.2",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -272,7 +284,7 @@
       "languageVersion": "3.1"
     }
   ],
-  "generated": "2023-10-24T02:39:22.363021Z",
+  "generated": "2023-10-27T17:04:54.389513Z",
   "generator": "pub",
   "generatorVersion": "3.1.3"
 }

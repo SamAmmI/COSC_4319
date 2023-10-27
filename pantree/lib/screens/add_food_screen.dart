@@ -37,7 +37,7 @@ class AddFoodScreen extends StatelessWidget {
                 var name = nameController.text;
                 var calories = double.tryParse(caloriesController.text) ?? 0.0;
                 if (name.isNotEmpty && calories > 0) {
-                  foodItems.add(FoodItem(name: name, calories: calories));
+                 // foodItems.add(FoodItem(name: name, : calories));
                   Navigator.pop(context);
                 }
               },

@@ -31,8 +31,8 @@ class FoodInventoryScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           var foodItem = foodItems[index];
           return ListTile(
-            title: Text(foodItem.name),
-            subtitle: Text('${foodItem.calories} calories'),
+            title: Text(foodItem.getNutrientDetails("name")),
+            subtitle: Text('${foodItem.getNutrientDetails("calories")} calories'),
           );
         },
       ),
