@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pantree/components/drawer.dart';
-import 'package:pantree/screens/log_meal.dart';
+import 'package:pantree/screens/log_food_screen.dart';
 import 'package:pantree/screens/nutritional_preferences.dart';
 import 'package:pantree/screens/daily_consumption.dart';
 
@@ -17,17 +17,18 @@ class _nutrition_screenState extends State<nutrition_screen> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Nutrition",
-        style: TextStyle(color: Theme.of(context).colorScheme.primary)
-        ),
+            style: TextStyle(color: Theme.of(context).colorScheme.primary)),
         centerTitle: true,
       ),
 
       //BELOW IS THE BODY OF THE SCREEN
       body: Padding(
-        padding:const EdgeInsets.all(16),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Hello, 'userName' ", //"Hello, ${userName ?? 'User'}", TO GET THE USERNAME FROM DB
+            Text(
+              "Hello, 'userName' ", //"Hello, ${userName ?? 'User'}", TO GET THE USERNAME FROM DB
               style: TextStyle(
                 color: Theme.of(context).colorScheme.primary,
                 fontSize: 20,
@@ -37,49 +38,52 @@ class _nutrition_screenState extends State<nutrition_screen> {
             const SizedBox(height: 20),
             const Divider(),
             const SizedBox(height: 20),
-            const Text("Daily Overview",
-                style: TextStyle(
+            const Text(
+              "Daily Overview",
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 10), // space between overview and card
-            
+
             // (1) CARD CONTAINING USER CONSUMPTION DETAILS BELOW
             InkWell(
-              onTap: (){
+              onTap: () {
                 Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => const DailyConsumptionScreen()),
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const DailyConsumptionScreen()),
                 );
               },
               child: Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15), 
-              ),
-              color: Colors.yellow,
-              child: const Padding(
-                padding: (EdgeInsets.all(16)),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Calories Consumed: 'currentValue'",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold
-                    ),), 
-                    Text("Proteins: consumed/goal"),
-                    Text("Carbs: consumed/goal"),
-                    Text("Fats: consumed/goal"),
-                  ],
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                color: Colors.yellow,
+                child: const Padding(
+                  padding: (EdgeInsets.all(16)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Calories Consumed: 'currentValue'",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      Text("Proteins: consumed/goal"),
+                      Text("Carbs: consumed/goal"),
+                      Text("Fats: consumed/goal"),
+                    ],
+                  ),
                 ),
               ),
             ),
-            ),
-            
+
             // Spacer between card and buttons
-            const SizedBox(height: 20), 
-            
+            const SizedBox(height: 20),
+
             // ROW OF BUTTONS THAT WILL LEAD TO 'log_meal' or 'nutritional preferences'
             Row(
               children: [
@@ -89,13 +93,14 @@ class _nutrition_screenState extends State<nutrition_screen> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const LogMeal()), 
+                        MaterialPageRoute(
+                            builder: (context) => const log_food_screen()),
                       );
                     },
                     child: Container(
-                      height: 100, 
+                      height: 100,
                       decoration: BoxDecoration(
-                        color: Colors.green, 
+                        color: Colors.green,
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: const Center(
@@ -116,7 +121,9 @@ class _nutrition_screenState extends State<nutrition_screen> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const nutritional_preferences()), 
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const nutritional_preferences()),
                       );
                     },
                     child: Container(
@@ -141,12 +148,11 @@ class _nutrition_screenState extends State<nutrition_screen> {
         ),
       ),
 
-      
       drawer: MyDrawer(
-        onSignOutTap: (){},
-        onFoodInventoryTap: (){},
-        onNutritionTap: (){},
-        onSettingsTap: (){},
+        onSignOutTap: () {},
+        onFoodInventoryTap: () {},
+        onNutritionTap: () {},
+        onSettingsTap: () {},
       ),
     );
   }
