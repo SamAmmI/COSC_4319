@@ -70,6 +70,10 @@ flutter_lints
 2.19
 file:///Users/johnny/.pub-cache/hosted/pub.dev/flutter_lints-2.0.3/
 file:///Users/johnny/.pub-cache/hosted/pub.dev/flutter_lints-2.0.3/lib/
+http
+3.0
+file:///Users/johnny/.pub-cache/hosted/pub.dev/http-1.1.0/
+file:///Users/johnny/.pub-cache/hosted/pub.dev/http-1.1.0/lib/
 http_parser
 2.12
 file:///Users/johnny/.pub-cache/hosted/pub.dev/http_parser-4.0.2/
@@ -102,6 +106,10 @@ path
 2.12
 file:///Users/johnny/.pub-cache/hosted/pub.dev/path-1.8.3/
 file:///Users/johnny/.pub-cache/hosted/pub.dev/path-1.8.3/lib/
+pie_chart
+2.12
+file:///Users/johnny/.pub-cache/hosted/pub.dev/pie_chart-5.3.2/
+file:///Users/johnny/.pub-cache/hosted/pub.dev/pie_chart-5.3.2/lib/
 plugin_platform_interface
 2.19
 file:///Users/johnny/.pub-cache/hosted/pub.dev/plugin_platform_interface-2.1.6/
