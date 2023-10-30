@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pantree/screens/edit_profile.dart';
 
 class UserProfileScreen extends StatelessWidget {
-  const UserProfileScreen({super.key});
+  const UserProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    User? user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('User Profile'),
@@ -18,36 +21,25 @@ class UserProfileScreen extends StatelessWidget {
               children: <Widget>[
                 const CircleAvatar(
                   radius: 60,
-                  backgroundImage: AssetImage(''),
+                  backgroundImage:
+                      AssetImage(''), // Add your image asset path here
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  'Place Holder',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                Text(
+                  user != null ? user.email ?? 'No Email' : 'No User',
+                  style: const TextStyle(fontSize: 18, color: Colors.grey),
                 ),
-                const SizedBox(height: 10),
-                const Text(
-                  'placeholder@example.com',
-                  style: TextStyle(fontSize: 18, color: Colors.grey),
-                ),
-                const SizedBox(height: 20),
-                /*Text(
-                  'Bio: Software Developer passionate about mobile app development. Always eager to learn new technologies and improve my coding skills.',
-                  style: TextStyle(fontSize: 18),
-                  textAlign: TextAlign.center,
-                ),*/
-
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                                        // Navigate to the EditProfileScreen when the button is pressed
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const EditProfile())
+                      MaterialPageRoute(
+                          builder: (context) => const EditProfile()),
                     );
                   },
                   child: const Text('Edit Profile'),
-               ),
+                ),
               ],
             ),
           ),
