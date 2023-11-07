@@ -23,80 +23,62 @@ class MyDrawer extends StatefulWidget {
 }
 
 class _MyDrawerState extends State<MyDrawer> {
-  void signOut(){
+  void signOut() {
     FirebaseAuth.instance.signOut();
   }
 
-  void nutritionScreen(){
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const nutrition_screen()
-      )
-    );
+  void nutritionScreen() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const nutrition_screen()));
   }
 
-  void foodInventory(){
+  void foodInventory() {
     Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const FoodInventoryScreen(foodItems: []))
-    );
+        context,
+        MaterialPageRoute(
+            builder: (context) => const FoodInventoryScreen(foodItems: [])));
   }
 
-  void settingsScreen(){
+  void settingsScreen() {
     Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const settings_screen(),
-      )
-    );
+        context,
+        MaterialPageRoute(
+          builder: (context) => const settings_screen(),
+        ));
   }
-
-
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: Theme.of(context).colorScheme.secondary,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            children: [
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(children: [
               Padding(
                 padding: const EdgeInsets.only(top: 25),
                 child: MyListTile(
-                  icon: Icons.food_bank, 
-                  text: "Nutrition", 
-                  onTap: nutritionScreen
-                ),
+                    icon: Icons.food_bank,
+                    text: "Nutrition",
+                    onTap: nutritionScreen),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 1),
                 child: MyListTile(
-                  icon: Icons.list, 
-                  text: "Food Inventory", 
-                  onTap: foodInventory
-                ),
+                    icon: Icons.list,
+                    text: "Food Inventory",
+                    onTap: foodInventory),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 1),
                 child: MyListTile(
-                icon: Icons.settings,
-                text: "Settings",
-                onTap: settingsScreen
-                ),
+                    icon: Icons.settings,
+                    text: "Settings",
+                    onTap: settingsScreen),
               ),
-              MyListTile(
-                  icon: Icons.logout,
-                  text: "Logout",
-                  onTap: signOut
-              )
-            ]
-          )
-        ],
-      )
-    );
+              MyListTile(icon: Icons.logout, text: "Logout", onTap: signOut)
+            ])
+          ],
+        ));
   }
 }
