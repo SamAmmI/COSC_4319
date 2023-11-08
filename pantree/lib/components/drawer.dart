@@ -36,7 +36,10 @@ class _MyDrawerState extends State<MyDrawer> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => const FoodInventoryScreen(foodItems: [])));
+            builder: (context) => FoodInventoryScreen(
+                  foodItems: [],
+                  onFoodItemSelected: (String foodItem) {},
+                )));
   }
 
   void settingsScreen() {

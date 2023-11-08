@@ -94,7 +94,7 @@ class _nutrition_screenState extends State<nutrition_screen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const log_food_screen()),
+                            builder: (context) => const MealLogScreen()),
                       );
                     },
                     child: Container(
