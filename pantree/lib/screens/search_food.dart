@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pantree/components/food_image.dart';
 import 'package:pantree/services/foodService.dart';
 import 'package:pantree/models/food_item.dart';
 
@@ -73,21 +74,61 @@ class SearchFoodState extends State<SearchFood> {
           children: [
             Column(
               children: [
-                // TextField for searching food items
-                TextField(
+                TextFormField(
                   controller: searchController,
-                  decoration: InputDecoration(
-                    labelText: 'Enter food name',
-                    border: OutlineInputBorder(),
+                  decoration: const InputDecoration(
+                    labelText: 'Search for food',
                   ),
+                  onFieldSubmitted: (value) async {
+                    try {
+                      final result = await foodService.searchOrAddFood(value);
+                      if (result != null) {
+                        setState(() {
+                          searchedItem = result;
+                          errorMsg = null;
+                        });
+                      }
+                    } catch (e) {
+                      setState(() {
+                        errorMsg = 'Failed to fetch food data';
+                        searchedItem = null;
+                      });
+                    }
+                  },
                 ),
-                const SizedBox(height: 20),
-                // ... Rest of the code
-
                 if (searchedItem != null) ...[
-                  // ... Rest of the code
-
-                  // Add Item Button
+                  const SizedBox(height: 20),
+                  RichText(
+                    text: TextSpan(
+                      style: const TextStyle(fontSize: 20, color: Colors.black),
+                      children: [
+                        const TextSpan(text: 'Food Name: '),
+                        TextSpan(
+                            text: searchedItem!.label,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 2,
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (searchedItem?.image != null)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 12),
+                          child: FoodImage(
+                            foodId: (searchedItem!.foodId),
+                          ),
+                        ),
+                      Expanded(
+                        child: Text(
+                            '${searchedItem!.label} Nutrients:\n${nutrientsToText(searchedItem!.nutrients)}'),
+                      ),
+                    ],
+                  ),
                   ElevatedButton(
                     onPressed: () {
                       if (searchedItem != null) {
@@ -97,7 +138,6 @@ class SearchFoodState extends State<SearchFood> {
                     child: Text('Add Item'),
                   ),
                 ],
-
                 if (errorMsg != null)
                   Text(errorMsg!, style: const TextStyle(color: Colors.red)),
               ],
