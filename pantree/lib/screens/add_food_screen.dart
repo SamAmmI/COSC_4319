@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:pantree/models/food_item.dart'; //food item class
 
 class AddFoodScreen extends StatelessWidget {
@@ -49,3 +49,4 @@ class AddFoodScreen extends StatelessWidget {
     );
   }
 }
+*/

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pantree/components/drawer.dart';
-import 'package:pantree/screens/add_food_screen.dart';
 import 'package:pantree/models/food_item.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pantree/screens/search_food.dart';
+import 'package:pantree/components/food_image.dart';
+import 'package:pantree/services/food_manager.dart';
 
 class FoodInventoryScreen extends StatefulWidget {
   final List<FoodItem> foodItems;
@@ -26,6 +26,9 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
   late String _userId;
   List<FoodItem> _userFoodItems = [];
 
+  // Initialize FoodManagement class
+  late FoodManagement _foodManagement;
+
   @override
   void initState() {
     super.initState();
@@ -35,29 +38,19 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
   Future<void> _getUser() async {
     _user = _auth.currentUser!;
     _userId = _user.uid;
+
+    // Initialize FoodManagement with user ID
+    _foodManagement = FoodManagement(_userId);
+
+    // Fetch user's food items and update the state
     _getUserFoodItems();
   }
 
   Future<void> _getUserFoodItems() async {
-    // Reference to the user's specific food items collection in Firestore
-    CollectionReference userFoodItems = FirebaseFirestore.instance
-        .collection('Users')
-        .doc(_userId)
-        .collection('foodItems');
-
-    // Retrieve the user's food items from Firestore
-    QuerySnapshot querySnapshot = await userFoodItems.get();
+    List<FoodItem> userFoodItems = await _foodManagement.getUserFoodItems();
 
     setState(() {
-      // Clear the previous user food items
-      _userFoodItems.clear();
-
-      // Add the retrieved food items to the list
-      _userFoodItems.addAll(
-        querySnapshot.docs
-            .map((doc) => FoodItem.fromMap(doc.data() as Map<String, dynamic>))
-            .toList(),
-      );
+      _userFoodItems = userFoodItems;
     });
   }
 
@@ -87,9 +80,11 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
         itemBuilder: (context, index) {
           var foodItem = _userFoodItems[index];
           return ListTile(
-            title: Text(foodItem.getNutrientDetails("name")),
-            subtitle:
-                Text('${foodItem.getNutrientDetails("calories")} calories'),
+            leading: FoodImage(
+                foodId: foodItem.foodId, size: 56.0), // Display the food image
+            title: Text(foodItem.label), // Display the food name
+            subtitle: Text(
+                'Calories: ${foodItem.getNutrientDetails("calories")}'), // Display additional details
           );
         },
       ),
@@ -99,7 +94,7 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
             context,
             MaterialPageRoute(
               builder: (context) => SearchFood(
-                userId: '',
+                userId: _userId, // Pass the user ID to the SearchFood screen
               ),
             ),
           );
