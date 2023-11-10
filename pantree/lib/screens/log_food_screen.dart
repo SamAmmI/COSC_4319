@@ -1,82 +1,72 @@
 import 'package:flutter/material.dart';
-import 'package:pantree/screens/browse_food.dart';
 import 'package:pantree/screens/search_food.dart';
+import 'package:pantree/screens/food_inventory_screen.dart';
 
-class log_food_screen extends StatelessWidget {
-  const log_food_screen({super.key});
+class MealLogScreen extends StatefulWidget {
+  const MealLogScreen({Key? key}) : super(key: key);
+
+  @override
+  _MealLogScreenState createState() => _MealLogScreenState();
+}
+
+class _MealLogScreenState extends State<MealLogScreen> {
+  List<String> mealItems = [];
+
+  void _addFoodItemToMeal(String foodItem) {
+    setState(() {
+      mealItems.add(foodItem);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Log Food",
-              style: TextStyle(color: Theme.of(context).colorScheme.primary)),
-          centerTitle: true,
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            // ROW OF BUTTONS THAT WILL LEAD TO 'search_food' or 'browse_food'
-            Row(
-              children: [
-                // (2) LOG MEAL BUTTON
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const searchFood()),
-                      );
-                    },
-                    child: Container(
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          'Search Food Item',
-                          style: TextStyle(color: Colors.white, fontSize: 18),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
+      appBar: AppBar(
+        title: Text("Log Meal"),
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SearchFood(
+                    userId: '',
                   ),
                 ),
-                const SizedBox(width: 20),
-
-                // (3) BROWSE FOOD BUTTON
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const browseFood()),
-                      );
-                    },
-                    child: Container(
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: Colors.orange,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          'Browse Food Item',
-                          style: TextStyle(color: Colors.white, fontSize: 18),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
+              );
+            },
+            child: Text("Search Food Item"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FoodInventoryScreen(
+                    foodItems: [],
+                    onFoodItemSelected: (String foodItem) {},
                   ),
                 ),
-              ],
+              );
+            },
+            child: Text("Import from Food Inventory"),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: mealItems.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(mealItems[index]),
+                  // Add more details about the food item if needed
+                );
+              },
             ),
-          ]),
-        ));
+          ),
+        ],
+      ),
+    );
   }
 }

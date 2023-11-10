@@ -3,21 +3,38 @@ import 'package:pantree/components/drawer.dart';
 import 'package:pantree/screens/log_food_screen.dart';
 import 'package:pantree/screens/nutritional_preferences.dart';
 import 'package:pantree/screens/daily_consumption.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class nutrition_screen extends StatefulWidget {
-  const nutrition_screen({super.key});
+  const nutrition_screen({Key? key});
 
   @override
-  State<nutrition_screen> createState() => _nutrition_screenState();
+  State<nutrition_screen> createState() => _NutritionScreenState();
 }
 
-class _nutrition_screenState extends State<nutrition_screen> {
+class _NutritionScreenState extends State<nutrition_screen> {
+  String? userEmail;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch user's email from Firebase Authentication
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        userEmail = user.email?.split('@').first;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Nutrition",
-            style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+        title: Text(
+          "Nutrition",
+          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        ),
         centerTitle: true,
       ),
 
@@ -28,7 +45,7 @@ class _nutrition_screenState extends State<nutrition_screen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Hello, 'userName' ", //"Hello, ${userName ?? 'User'}", TO GET THE USERNAME FROM DB
+              "Hello, ${userEmail ?? 'User'}", //"Hello, ${userName ?? 'User'}", TO GET THE USERNAME FROM DB
               style: TextStyle(
                 color: Theme.of(context).colorScheme.primary,
                 fontSize: 20,
@@ -94,7 +111,7 @@ class _nutrition_screenState extends State<nutrition_screen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const log_food_screen()),
+                            builder: (context) => const MealLogScreen()),
                       );
                     },
                     child: Container(

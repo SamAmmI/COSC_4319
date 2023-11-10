@@ -1,23 +1,36 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pantree/components/food_image.dart';
 import 'package:pantree/services/foodService.dart';
 import 'package:pantree/models/food_item.dart';
-import 'package:pantree/components/food_image.dart';
 
-class searchFood extends StatefulWidget {
-  const searchFood({Key? key}) : super(key: key);
+class SearchFood extends StatefulWidget {
+  const SearchFood({Key? key, required String userId}) : super(key: key);
 
   @override
-  searchFoodState createState() => searchFoodState();
+  SearchFoodState createState() => SearchFoodState();
 }
 
-class searchFoodState extends State<searchFood> {
+class SearchFoodState extends State<SearchFood> {
   final TextEditingController searchController = TextEditingController();
-  FoodItem? searchedItem; // To store the search result.
-  String? errorMsg; // To show anyerrorMsg messages.
-
+  FoodItem? searchedItem;
+  String? errorMsg;
+  bool isLoading = false;
   final FoodService foodService = FoodService();
 
-  bool isLoading = false;
+  void addToUserDatabase(FoodItem foodItem) async {
+    try {
+      String userId = FirebaseAuth.instance.currentUser!.uid;
+      await foodService.addFoodItemToUserDatabase(userId, foodItem);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Food item added to your database')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to add food item')),
+      );
+    }
+  }
 
   Future<void> handleSearch() async {
     final foodName = searchController.text;
@@ -42,14 +55,12 @@ class searchFoodState extends State<searchFood> {
     }
   }
 
-  // method to assist in the output of the given nutrition facts
   String nutrientsToText(Map<String, dynamic> nutrients) {
     return nutrients.entries
         .map((e) => '${searchedItem!.getNutrientDetails(e.key)}: ${e.value}')
         .join('\n');
   }
 
-  // WIDGET OF LOG MEAL SCREEN
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,6 +128,14 @@ class searchFoodState extends State<searchFood> {
                             '${searchedItem!.label} Nutrients:\n${nutrientsToText(searchedItem!.nutrients)}'),
                       ),
                     ],
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (searchedItem != null) {
+                        addToUserDatabase(searchedItem!);
+                      }
+                    },
+                    child: Text('Add Item'),
                   ),
                 ],
                 if (errorMsg != null)

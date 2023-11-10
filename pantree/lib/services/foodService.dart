@@ -24,87 +24,96 @@ CLASS METHODS BELOW
 
 */
 class FoodService {
-
-final CollectionReference foodItems = FirebaseFirestore.instance.collection('foodItems');
+  final CollectionReference foodItems =
+      FirebaseFirestore.instance.collection('foodItems');
 
 // method to add food item for firsbase
-Future<FoodItem> addFoodItemToFirebase(FoodItem food) async {
+  Future<FoodItem> addFoodItemToFirebase(FoodItem food) async {
+    await foodItems.doc(food.foodId).set(food.toMap());
 
-  await foodItems.doc(food.foodId).set(food.toMap());
+    // Removed the subcollection so that it reduces server contact
+    // able to store nutrients within the foodItem entirely
+    // await docRef.collection('nutrients').add(food.nutrients);
 
-  // Removed the subcollection so that it reduces server contact
-  // able to store nutrients within the foodItem entirely
-  // await docRef.collection('nutrients').add(food.nutrients); 
+    return food;
+  }
 
-  return food;
-}
+  Future<FoodItem> addFoodItemToUserDatabase(
+      String userId, FoodItem food) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('foodItems')
+        .doc(food.foodId)
+        .set(food.toMap());
+    return food; //kev- add the food item to the user's specific database
+  }
 
-// first we want to search database if !exist we then turn to the api 
-// to search and after search we add to database so that next search 
+// first we want to search database if !exist we then turn to the api
+// to search and after search we add to database so that next search
 // we dont have to request from Api again
-Future<FoodItem?> searchOrAddFood(String foodName) async {
+  Future<FoodItem?> searchOrAddFood(String foodName) async {
+    // Required Api info, my Id and appKey
+    const String apiURL = 'https://api.edamam.com/api/food-database/v2/parser';
+    const String appId = 'f11d8162';
+    const String appKey = 'e271a11e5e0db5ab9860827c0713bda1';
 
-  // Required Api info, my Id and appKey
-  const String apiURL = 'https://api.edamam.com/api/food-database/v2/parser';
-  const String appId = 'f11d8162';
-  const String appKey = 'e271a11e5e0db5ab9860827c0713bda1';
+    //search in Database aka Firebase
+    final QuerySnapshot snapshot =
+        await foodItems.where('label', isEqualTo: foodName).get();
 
-  //search in Database aka Firebase
-  final QuerySnapshot snapshot = await foodItems.where('label', isEqualTo: foodName).get();
-
-  // check cases to see if database connected and not empty
-  // then will check if 'label' exists in the Firebase
-  if(snapshot.docs.isNotEmpty) {
-
-    // FOUND IN FIREBASE
-    final doc = snapshot.docs.first;
-    return FoodItem.fromMap(doc.data() as Map<String, dynamic>);
-  }
-
-  // if not in Firebase, fetch from API
-  final response = await http.get(Uri.parse('$apiURL?app_id=$appId&app_key=$appKey&ingr=$foodName&nutrition-type=logging'));
-
-  // if response code '200' means response from api
-  if(response.statusCode == 200){
-    
-    final parsedResponse = json.decode(response.body);
-
-    if(parsedResponse['parsed'] != null && parsedResponse['parsed'].length > 0){
-
-      final foodData = parsedResponse['parsed'][0]['food'];
-
-      // consturcting the FoodItem object
-      final food = FoodItem(
-        foodId: foodData['foodId'],
-        label: foodData['label'],
-        knownAs: foodData['knownAs'],
-        nutrients: foodData['nutrients'],
-        category: foodData['category'],
-        categoryLabel: foodData['categoryLabel'],
-        image: foodData['image'],
-      );
-
-      // now add the new object into Firebase to have stored for next search
-      await addFoodItemToFirebase(food);
-
-      // returned the fetched foodItem from api
-      return food;
+    // check cases to see if database connected and not empty
+    // then will check if 'label' exists in the Firebase
+    if (snapshot.docs.isNotEmpty) {
+      // FOUND IN FIREBASE
+      final doc = snapshot.docs.first;
+      return FoodItem.fromMap(doc.data() as Map<String, dynamic>);
     }
-  } else {
-    throw Exception('failed to fetch food data');
-  }
-  return null;
-}
 
-Future<String?> fetchFoodImageLink(String foodId) async {
-   
-   DocumentSnapshot doc = await foodItems.doc(foodId).get();
+    // if not in Firebase, fetch from API
+    final response = await http.get(Uri.parse(
+        '$apiURL?app_id=$appId&app_key=$appKey&ingr=$foodName&nutrition-type=logging'));
 
-  if(doc.data() != null){
-    Map<String, dynamic> data  = doc.data() as Map<String, dynamic>;
-    return data['image'];
-  }
-  return null;
+    // if response code '200' means response from api
+    if (response.statusCode == 200) {
+      final parsedResponse = json.decode(response.body);
+
+      if (parsedResponse['parsed'] != null &&
+          parsedResponse['parsed'].length > 0) {
+        final foodData = parsedResponse['parsed'][0]['food'];
+
+        // consturcting the FoodItem object
+        final food = FoodItem(
+          foodId: foodData['foodId'],
+          label: foodData['label'],
+          knownAs: foodData['knownAs'],
+          nutrients: foodData['nutrients'],
+          category: foodData['category'],
+          categoryLabel: foodData['categoryLabel'],
+          image: foodData['image'],
+        );
+
+        // now add the new object into Firebase to have stored for next search
+        await addFoodItemToFirebase(food);
+
+        // returned the fetched foodItem from api
+        return food;
+      }
+    } else {
+      throw Exception('failed to fetch food data');
+    }
+    return null;
   }
 
+  Future<String?> fetchFoodImageLink(String foodId) async {
+    DocumentSnapshot doc = await foodItems.doc(foodId).get();
+
+    if (doc.data() != null) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      return data['image'];
+    }
+    return null;
+  }
+
+  getUserFoodItems(String uid) {}
 }
