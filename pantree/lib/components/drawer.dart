@@ -23,10 +23,6 @@ class MyDrawer extends StatefulWidget {
 }
 
 class _MyDrawerState extends State<MyDrawer> {
-  void signOut() {
-    FirebaseAuth.instance.signOut();
-  }
-
   void nutritionScreen() {
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => const nutrition_screen()));
@@ -48,6 +44,10 @@ class _MyDrawerState extends State<MyDrawer> {
         MaterialPageRoute(
           builder: (context) => const settings_screen(),
         ));
+  }
+
+  void signOut() {
+    FirebaseAuth.instance.signOut();
   }
 
   @override
@@ -79,7 +79,10 @@ class _MyDrawerState extends State<MyDrawer> {
                     text: "Settings",
                     onTap: settingsScreen),
               ),
-              MyListTile(icon: Icons.logout, text: "Logout", onTap: signOut)
+              Padding(
+                  padding: const EdgeInsets.only(top: 1),
+                  child: MyListTile(
+                      icon: Icons.logout, text: "Logout", onTap: signOut))
             ])
           ],
         ));
