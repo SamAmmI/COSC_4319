@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:testapp/components/drawer.dart';
-import 'package:testapp/screens/add_food_screen.dart'; // Import AddFoodScreen Class
-import 'package:testapp/models/food_item.dart'; // Import the FoodItem class
+import '../components/drawer.dart';
+import '../screens/add_food_screen.dart'; // Import AddFoodScreen Class
+import '../models/food_item.dart'; // Import the FoodItem class
 
 class FoodInventoryScreen extends StatelessWidget {
   final List<FoodItem> foodItems;

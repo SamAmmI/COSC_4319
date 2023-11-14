@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:testapp/components/button.dart';
-import 'package:testapp/components/text_field.dart';
-import 'package:testapp/screens/second_reg_page.dart';
+import '../components/button.dart';
+import '../components/text_field.dart';
 
 class RegisterPage extends StatefulWidget {
   final Function()? onTap;
@@ -112,7 +111,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 GestureDetector(
                   onTap: widget.onTap,
-                  child: Text("Sign in Here",
+                  child: const Text("Sign in Here",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.blue

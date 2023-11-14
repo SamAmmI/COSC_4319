@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:testapp/components/drawer.dart';
+import '../components/drawer.dart';
 
 class nutrition_screen extends StatefulWidget {
   const nutrition_screen({super.key});

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:testapp/models/food_item.dart'; //food item class
+import '../models/food_item.dart'; //food item class
 
 class AddFoodScreen extends StatelessWidget {
   final List<FoodItem> foodItems;

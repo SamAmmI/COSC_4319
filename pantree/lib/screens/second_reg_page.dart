@@ -1,8 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:testapp/components/button.dart';
-import 'package:testapp/components/text_field.dart';
+import '../components/button.dart';
+import '../components/text_field.dart';
 //Contains Height, Current and Goals weights, Gender, and Age
 
 class SecRegPage extends StatefulWidget {
@@ -34,7 +32,7 @@ class _SecRegPageState extends State<SecRegPage> {
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25),
+            padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

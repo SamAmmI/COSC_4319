@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:testapp/components/list_tile.dart';
-import 'package:testapp/screens/food_inventory_screen.dart';
-import 'package:testapp/screens/nutrition_screen.dart';
+
+import '../screens/food_inventory_screen.dart';
+import '../screens/nutrition_screen.dart';
+import'../components/list_tile.dart';
 
 class MyDrawer extends StatefulWidget {
   final Function()? onSignOutTap;
