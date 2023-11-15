@@ -70,7 +70,7 @@ class _NutritionScreenState extends State<nutrition_screen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const DailyConsumptionScreen()),
+                      builder: (context) => const NutriTrack()),
                 );
               },
               child: Card(

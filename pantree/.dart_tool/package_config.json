@@ -182,6 +182,12 @@
       "languageVersion": "2.15"
     },
     {
+      "name": "intl",
+      "rootUri": "file:///Users/danielwarren/.pub-cache/hosted/pub.dev/intl-0.18.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "js",
       "rootUri": "file:///Users/danielwarren/.pub-cache/hosted/pub.dev/js-0.6.7",
       "packageUri": "lib/",
@@ -220,6 +226,18 @@
     {
       "name": "path",
       "rootUri": "file:///Users/danielwarren/.pub-cache/hosted/pub.dev/path-1.8.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "percent_indicator",
+      "rootUri": "file:///Users/danielwarren/.pub-cache/hosted/pub.dev/percent_indicator-4.2.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "persistent_bottom_nav_bar",
+      "rootUri": "file:///Users/danielwarren/.pub-cache/hosted/pub.dev/persistent_bottom_nav_bar-5.0.2",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -296,6 +314,18 @@
       "languageVersion": "2.18"
     },
     {
+      "name": "syncfusion_flutter_charts",
+      "rootUri": "file:///Users/danielwarren/.pub-cache/hosted/pub.dev/syncfusion_flutter_charts-23.1.44",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
+      "name": "syncfusion_flutter_core",
+      "rootUri": "file:///Users/danielwarren/.pub-cache/hosted/pub.dev/syncfusion_flutter_core-23.1.44",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
       "name": "synchronized",
       "rootUri": "file:///Users/danielwarren/.pub-cache/hosted/pub.dev/synchronized-3.1.0",
       "packageUri": "lib/",
@@ -350,7 +380,7 @@
       "languageVersion": "3.1"
     }
   ],
-  "generated": "2023-11-14T17:23:44.916487Z",
+  "generated": "2023-11-14T20:17:12.773220Z",
   "generator": "pub",
   "generatorVersion": "3.1.3"
 }
