@@ -59,7 +59,9 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Food Inventory',
-            style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+            //style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+            style: Theme.of(context).appBarTheme.titleTextStyle),
+        centerTitle: true,
       ),
       drawer: MyDrawer(
         onSignOutTap: () {
@@ -82,9 +84,15 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
           return ListTile(
             leading: FoodImage(
                 foodId: foodItem.foodId, size: 56.0), // Display the food image
-            title: Text(foodItem.label), // Display the food name
-            subtitle: Text(
-                'Calories: ${foodItem.getNutrientDetails("calories")}'), // Display additional details
+            title: Text(
+              foodItem.label,
+              style: Theme.of(context).textTheme.titleMedium,
+            ), // Display the food name
+            subtitle:
+                Text('Calories: ${foodItem.getNutrientDetails("calories")}'),
+            subtitleTextStyle: Theme.of(context)
+                .textTheme
+                .bodySmall, // Display additional details
           );
         },
       ),

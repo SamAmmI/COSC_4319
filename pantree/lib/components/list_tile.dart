@@ -12,10 +12,14 @@ class MyListTile extends StatelessWidget {
     return Padding(
         padding: const EdgeInsets.only(left: 5),
         child: ListTile(
-            leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
-            onTap: onTap,
-            title: Text(text,
-                style:
-                    TextStyle(color: Theme.of(context).colorScheme.primary))));
+          leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
+          onTap: onTap,
+          title: Text(
+            text,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+          ),
+        ));
   }
 }

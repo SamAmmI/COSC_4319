@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pantree/auth/login_or_register.dart';
 import 'package:pantree/components/list_tile.dart';
 import 'package:pantree/screens/food_inventory_screen.dart';
 import 'package:pantree/screens/nutrition_screen.dart';
@@ -23,6 +24,20 @@ class MyDrawer extends StatefulWidget {
 }
 
 class _MyDrawerState extends State<MyDrawer> {
+  void signOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => LoginOrRegister(
+                onTap: () {},
+              )));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error signing out: $e')),
+      );
+    }
+  }
+
   void nutritionScreen() {
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => const nutrition_screen()));
@@ -46,14 +61,10 @@ class _MyDrawerState extends State<MyDrawer> {
         ));
   }
 
-  void signOut() {
-    FirebaseAuth.instance.signOut();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
-        backgroundColor: Theme.of(context).colorScheme.secondary,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -79,10 +90,7 @@ class _MyDrawerState extends State<MyDrawer> {
                     text: "Settings",
                     onTap: settingsScreen),
               ),
-              Padding(
-                  padding: const EdgeInsets.only(top: 1),
-                  child: MyListTile(
-                      icon: Icons.logout, text: "Logout", onTap: signOut))
+              MyListTile(icon: Icons.logout, text: "Logout", onTap: signOut)
             ])
           ],
         ));

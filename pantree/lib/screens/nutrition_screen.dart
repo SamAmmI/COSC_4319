@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:pantree/components/drawer.dart';
+import 'package:pantree/models/user_profile.dart';
 import 'package:pantree/screens/log_food_screen.dart';
 import 'package:pantree/screens/nutritional_preferences.dart';
 import 'package:pantree/screens/daily_consumption.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pantree/models/local_user_manager.dart';
+import 'package:pantree/components/info_card1.dart';
+import 'package:pantree/components/vertical_info_card.dart';
 
 class nutrition_screen extends StatefulWidget {
   const nutrition_screen({Key? key});
@@ -14,17 +18,39 @@ class nutrition_screen extends StatefulWidget {
 
 class _NutritionScreenState extends State<nutrition_screen> {
   String? userEmail;
+  UserProfile? userProfile;
+
+  // USER ATTRIBUTES NEEDED FOR THIS SCREEN
+  double? calories;
+  double? protein;
+  double? carbs;
+  double? fat;
+  String? firstName;
 
   @override
   void initState() {
     super.initState();
-    // Fetch user's email from Firebase Authentication
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      setState(() {
-        userEmail = user.email?.split('@').first;
-      });
+    fetchUserProfile();
+  }
+
+  // WHERE WE FETCH THE PROFILE AND ATTRIBUTES
+  void fetchUserProfile() async {
+    final localUserManager = LocalUserManager();
+    userProfile = localUserManager.getCachedUser();
+
+    if (userProfile == null) {
+      String userID = FirebaseAuth.instance.currentUser?.uid ?? '';
+      await localUserManager.fetchAndUpdateUser(userID);
+      userProfile = localUserManager.getCachedUser();
     }
+    if (userProfile != null) {
+      calories = localUserManager.getUserAttribute('Calories') as double?;
+      protein = localUserManager.getUserAttribute('Protein') as double?;
+      carbs = localUserManager.getUserAttribute('Carbs') as double?;
+      fat = localUserManager.getUserAttribute('Fat') as double?;
+      firstName = localUserManager.getUserAttribute('firstName') as String?;
+    }
+    setState(() {});
   }
 
   @override
@@ -33,133 +59,111 @@ class _NutritionScreenState extends State<nutrition_screen> {
       appBar: AppBar(
         title: Text(
           "Nutrition",
-          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+          style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
         centerTitle: true,
       ),
 
       //BELOW IS THE BODY OF THE SCREEN
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Hello, ${userEmail ?? 'User'}", //"Hello, ${userName ?? 'User'}", TO GET THE USERNAME FROM DB
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              "Hello, ${firstName ?? 'User'}", //"Hello, ${userName ?? 'User'}", TO GET THE USERNAME FROM DB
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 20),
             const Divider(),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               "Daily Overview",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
-            const SizedBox(height: 10), // space between overview and card
+            const SizedBox(height: 10),
+            //NEW IMPLEMENTATION USING INFOCARD1
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  // Card 1: User Consumption Details
+                  Container(
+                    width: 400,
+                    child: InfoCard(
+                      title: 'Calories Goal: ${calories?.round() ?? 'N/A'}',
+                      subtitle: 'Proteins: ${protein?.round() ?? 'N/A'}\n'
+                          'Carbs: ${carbs?.round() ?? 'N/A'}\n'
+                          'Fats: ${fat?.round() ?? 'N/A'}',
+                      info: '',
+                      imageUrl: '',
+                      cardHeight: 180.0,
+                      showIcon: false,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const DailyConsumptionScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 20),
 
-            // (1) CARD CONTAINING USER CONSUMPTION DETAILS BELOW
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const DailyConsumptionScreen()),
-                );
-              },
-              child: Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                color: Colors.yellow,
-                child: const Padding(
-                  padding: (EdgeInsets.all(16)),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  // Card 2: Log Meal Button
+                  Row(
                     children: [
-                      Text(
-                        "Calories Consumed: 'currentValue'",
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                      Expanded(
+                        child: Container(
+                          height: 200, // Increased height to avoid overflow
+                          child: VerticalInfoCard(
+                            title: 'Log Food',
+                            subtitle: '',
+                            info: '',
+                            imageUrl: '',
+                            cardWidth: 160,
+                            showIcon: false,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const MealLogScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       ),
-                      Text("Proteins: consumed/goal"),
-                      Text("Carbs: consumed/goal"),
-                      Text("Fats: consumed/goal"),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Expanded(
+                        child: Container(
+                          height: 200, // Increased height to avoid overflow
+                          child: VerticalInfoCard(
+                            title: 'Nutritional \nPreferences',
+                            subtitle: '',
+                            info: '',
+                            imageUrl: '',
+                            cardWidth: 160,
+                            showIcon: false,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const nutritional_preferences(),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
                     ],
                   ),
-                ),
+                ],
               ),
-            ),
-
-            // Spacer between card and buttons
-            const SizedBox(height: 20),
-
-            // ROW OF BUTTONS THAT WILL LEAD TO 'log_meal' or 'nutritional preferences'
-            Row(
-              children: [
-                // (2) LOG MEAL BUTTON
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const MealLogScreen()),
-                      );
-                    },
-                    child: Container(
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          'Log Food',
-                          style: TextStyle(color: Colors.white, fontSize: 18),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 20),
-
-                // (3) NUTRITIONAL PREFERENCES BUTTON
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const nutritional_preferences()),
-                      );
-                    },
-                    child: Container(
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: Colors.orange,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          'Nutritional Preferences',
-                          style: TextStyle(color: Colors.white, fontSize: 18),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
             ),
           ],
         ),
