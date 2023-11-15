@@ -17,4 +17,5 @@ com.example.pantree.app-merged_res-15 C:\Users\Jonathan\git\COSC_4319\pantree\bu
 com.example.pantree.app-packaged_res-16 C:\Users\Jonathan\git\COSC_4319\pantree\build\cloud_firestore\intermediates\packaged_res\debug
 com.example.pantree.app-packaged_res-17 C:\Users\Jonathan\git\COSC_4319\pantree\build\firebase_auth\intermediates\packaged_res\debug
 com.example.pantree.app-packaged_res-18 C:\Users\Jonathan\git\COSC_4319\pantree\build\firebase_core\intermediates\packaged_res\debug
-com.example.pantree.app-packaged_res-19 C:\Users\Jonathan\git\COSC_4319\pantree\build\sqflite\intermediates\packaged_res\debug
+com.example.pantree.app-packaged_res-19 C:\Users\Jonathan\git\COSC_4319\pantree\build\path_provider_android\intermediates\packaged_res\debug
+com.example.pantree.app-packaged_res-20 C:\Users\Jonathan\git\COSC_4319\pantree\build\sqflite\intermediates\packaged_res\debug

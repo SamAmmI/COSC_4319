@@ -45,6 +45,7 @@ MERGED from [:firebase_auth] C:\Users\Jonathan\git\COSC_4319\pantree\build\fireb
 MERGED from [:cloud_firestore] C:\Users\Jonathan\git\COSC_4319\pantree\build\cloud_firestore\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-17:12
 MERGED from [:firebase_core] C:\Users\Jonathan\git\COSC_4319\pantree\build\firebase_core\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-17:12
 MERGED from [:sqflite] C:\Users\Jonathan\git\COSC_4319\pantree\build\sqflite\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-9:12
+MERGED from [:path_provider_android] C:\Users\Jonathan\git\COSC_4319\pantree\build\path_provider_android\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-9:12
 MERGED from [com.google.firebase:firebase-auth:22.1.2] C:\Users\Jonathan\.gradle\caches\transforms-3\b7396143902b28e5fc1a8d7943d935fb\transformed\jetified-firebase-auth-22.1.2\AndroidManifest.xml:17:1-75:12
 MERGED from [com.google.android.recaptcha:recaptcha:18.1.2] C:\Users\Jonathan\.gradle\caches\transforms-3\3ed458108fbd69ced1e2054ebc5e875f\transformed\jetified-recaptcha-18.1.2\AndroidManifest.xml:2:1-10:12
 MERGED from [androidx.window:window-java:1.0.0-beta04] C:\Users\Jonathan\.gradle\caches\transforms-3\ae81e06d24c799147c26814497a2a305\transformed\jetified-window-java-1.0.0-beta04\AndroidManifest.xml:17:1-23:12
@@ -110,6 +111,8 @@ MERGED from [:firebase_core] C:\Users\Jonathan\git\COSC_4319\pantree\build\fireb
 MERGED from [:firebase_core] C:\Users\Jonathan\git\COSC_4319\pantree\build\firebase_core\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-7:41
 MERGED from [:sqflite] C:\Users\Jonathan\git\COSC_4319\pantree\build\sqflite\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-7:41
 MERGED from [:sqflite] C:\Users\Jonathan\git\COSC_4319\pantree\build\sqflite\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-7:41
+MERGED from [:path_provider_android] C:\Users\Jonathan\git\COSC_4319\pantree\build\path_provider_android\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-7:41
+MERGED from [:path_provider_android] C:\Users\Jonathan\git\COSC_4319\pantree\build\path_provider_android\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-7:41
 MERGED from [com.google.firebase:firebase-auth:22.1.2] C:\Users\Jonathan\.gradle\caches\transforms-3\b7396143902b28e5fc1a8d7943d935fb\transformed\jetified-firebase-auth-22.1.2\AndroidManifest.xml:21:5-23:64
 MERGED from [com.google.firebase:firebase-auth:22.1.2] C:\Users\Jonathan\.gradle\caches\transforms-3\b7396143902b28e5fc1a8d7943d935fb\transformed\jetified-firebase-auth-22.1.2\AndroidManifest.xml:21:5-23:64
 MERGED from [com.google.android.recaptcha:recaptcha:18.1.2] C:\Users\Jonathan\.gradle\caches\transforms-3\3ed458108fbd69ced1e2054ebc5e875f\transformed\jetified-recaptcha-18.1.2\AndroidManifest.xml:5:5-44
