@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pantree/components/modern_text_box.dart';
+import 'package:pantree/models/local_user_manager.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key}) : super(key: key);
@@ -8,8 +10,8 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
+  TextEditingController firstNameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
   TextEditingController heightController = TextEditingController();
   TextEditingController currentWeightController = TextEditingController();
   TextEditingController goalWeightController = TextEditingController();
@@ -26,53 +28,73 @@ class _EditProfileState extends State<EditProfile> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(labelText: 'Name'),
+              ModernTextBox(
+                controller: firstNameController,
+                decoration: InputDecoration(labelText: 'First Name'),
+                width: 350,
               ),
               const SizedBox(height: 20),
-              TextField(
-                controller: emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+              ModernTextBox(
+                controller: lastNameController,
+                decoration: InputDecoration(labelText: 'Last Name'),
+                width: 350,
               ),
               const SizedBox(height: 20),
-              TextField(
+              ModernTextBox(
                 controller: heightController,
                 decoration: InputDecoration(labelText: 'Height (cm)'),
+                width: 350,
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 20),
-              TextField(
+              ModernTextBox(
                 controller: currentWeightController,
                 decoration: InputDecoration(labelText: 'Current Weight (kg)'),
+                width: 350,
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 20),
-              TextField(
+              ModernTextBox(
                 controller: goalWeightController,
                 decoration: InputDecoration(labelText: 'Goal Weight (kg)'),
                 keyboardType: TextInputType.number,
+                width: 350,
               ),
               const SizedBox(height: 40),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   // Save the edited profile details
-                  String newName = nameController.text;
-                  String newEmail = emailController.text;
-                  double newHeight =
-                      double.tryParse(heightController.text) ?? 0.0;
-                  double newCurrentWeight =
-                      double.tryParse(currentWeightController.text) ?? 0.0;
-                  double newGoalWeight =
-                      double.tryParse(goalWeightController.text) ?? 0.0;
+                  String newFirstName = firstNameController.text;
+                  String newLastName = lastNameController.text;
+                  double? newHeight = double.tryParse(heightController.text);
+                  double? newCurrentWeight =
+                      double.tryParse(currentWeightController.text);
+                  double? newGoalWeight =
+                      double.tryParse(goalWeightController.text);
 
-                  // Here you can update the user's profile information in your database.
-                  // For demonstration purposes, print the updated details.
-                  print('Updated Name: $newName');
-                  print('Updated Email: $newEmail');
-                  print('Updated Height: $newHeight cm');
-                  print('Updated Current Weight: $newCurrentWeight kg');
-                  print('Updated Goal Weight: $newGoalWeight kg');
+                  final localUserManager = LocalUserManager();
+
+                  //UPDATING USER PROFILE SETTING
+                  if (newFirstName.isNotEmpty) {
+                    await localUserManager.updateUserAttribute(
+                        'firstName', newFirstName);
+                  }
+                  if (newFirstName.isNotEmpty) {
+                    await localUserManager.updateUserAttribute(
+                        'lastName', newLastName);
+                  }
+                  if (newHeight != null) {
+                    await localUserManager.updateUserAttribute(
+                        'height', newHeight);
+                  }
+                  if (newCurrentWeight != null) {
+                    await localUserManager.updateUserAttribute(
+                        'currentWeight', newCurrentWeight);
+                  }
+                  if (newGoalWeight != null) {
+                    await localUserManager.updateUserAttribute(
+                        'goalWeight', newGoalWeight);
+                  }
 
                   // Navigate back to the user profile screen after saving the changes.
                   Navigator.pop(context);
@@ -89,8 +111,8 @@ class _EditProfileState extends State<EditProfile> {
   @override
   void dispose() {
     // Clean up the controllers when the widget is disposed.
-    nameController.dispose();
-    emailController.dispose();
+    firstNameController.dispose();
+    lastNameController.dispose();
     heightController.dispose();
     currentWeightController.dispose();
     goalWeightController.dispose();

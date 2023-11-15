@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:pantree/components/button.dart';
 import 'package:pantree/components/text_field.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -36,8 +35,8 @@ class _RegisterPageState extends State<RegisterPage> {
       );
 
       await FirebaseFirestore.instance
-          .collection("Users")
-          .doc(userCredential.user!.email)
+          .collection("users")
+          .doc(userCredential.user!.uid)
           .set({
         'email': emailTextController.text,
         'firstname': firstNameTextController.text,
@@ -63,15 +62,54 @@ class _RegisterPageState extends State<RegisterPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // ... (your UI code remains the same)
-                MyButton(onTap: nextPage, text: "Next"),
-                GestureDetector(
-                  onTap: widget.onTap,
+                Text("Welcome to Pantree, please create an account",
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary)),
+                const SizedBox(
+                  height: 10,
+                ),
+                MyTextField(
+                    controller: firstNameTextController,
+                    hintText: "Enter your first name here",
+                    obscureText: false),
+                const SizedBox(
+                  height: 10,
+                ),
+                MyTextField(
+                    controller: lastNameTextController,
+                    hintText: "Enter your last name here",
+                    obscureText: false),
+                const SizedBox(
+                  height: 10,
+                ),
+                MyTextField(
+                    controller: emailTextController,
+                    hintText: "Enter Email Here",
+                    obscureText: false),
+                const SizedBox(height: 10),
+                MyTextField(
+                    controller: passTextController,
+                    hintText: "Enter Password Here",
+                    obscureText: true),
+                const SizedBox(height: 10),
+                MyTextField(
+                    controller: confirmPassTextController,
+                    hintText: "Confirm Password Here",
+                    obscureText: true),
+                const SizedBox(
+                  height: 10,
+                ),
+                ElevatedButton(
+                    onPressed: nextPage,
+                    child: Text("Next"),
+                    style: ElevatedButton.styleFrom(enableFeedback: true)),
+                ElevatedButton(
+                  onPressed: widget.onTap,
                   child: const Text(
                     "Sign in Here",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.blue,
+                      color: Colors.white,
                     ),
                   ),
                 ),

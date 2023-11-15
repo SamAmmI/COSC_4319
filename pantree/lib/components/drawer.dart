@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pantree/auth/login_or_register.dart';
 import 'package:pantree/components/list_tile.dart';
 import 'package:pantree/screens/food_inventory_screen.dart';
 import 'package:pantree/screens/nutrition_screen.dart';
@@ -23,8 +24,18 @@ class MyDrawer extends StatefulWidget {
 }
 
 class _MyDrawerState extends State<MyDrawer> {
-  void signOut() {
-    FirebaseAuth.instance.signOut();
+  void signOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => LoginOrRegister(
+                onTap: () {},
+              )));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error signing out: $e')),
+      );
+    }
   }
 
   void nutritionScreen() {
@@ -36,14 +47,10 @@ class _MyDrawerState extends State<MyDrawer> {
     Navigator.push(
         context,
         MaterialPageRoute(
-<<<<<<< HEAD
-            builder: (context) => const FoodInventoryScreen(foodItems: [])));
-=======
             builder: (context) => FoodInventoryScreen(
                   foodItems: [],
                   onFoodItemSelected: (String foodItem) {},
                 )));
->>>>>>> Kevin
   }
 
   void settingsScreen() {
@@ -57,7 +64,7 @@ class _MyDrawerState extends State<MyDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-        backgroundColor: Theme.of(context).colorScheme.secondary,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

@@ -142,8 +142,9 @@ class _settings_screenState extends State<settings_screen> {
       appBar: AppBar(
         title: Text(
           "Settings",
-          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+          style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
+        centerTitle: true,
       ),
       drawer: MyDrawer(
         onSignOutTap: () {},
@@ -165,7 +166,8 @@ class _settings_screenState extends State<settings_screen> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const UserProfileScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => const UserProfileScreen()),
                       );
                     },
                   ),
@@ -173,11 +175,10 @@ class _settings_screenState extends State<settings_screen> {
                     title: "Theme",
                     icon: Icons.dark_mode_outlined,
                     trailing: Switch(
-                      value: themeNotifier.currentTheme == darkTheme,
-                      onChanged: (value) {
-                        themeNotifier.toggleTheme();
-                        }
-                      ),
+                        value: themeNotifier.currentTheme == darkTheme,
+                        onChanged: (value) {
+                          themeNotifier.toggleTheme();
+                        }),
                   ),
                 ],
               ),
@@ -191,7 +192,8 @@ class _settings_screenState extends State<settings_screen> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const AboutScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => const AboutScreen()),
                       );
                     },
                   ),
@@ -231,7 +233,6 @@ class ListTiles extends StatelessWidget {
   }
 }
 
-
 class LSection extends StatelessWidget {
   final String? title;
   final List<Widget> children;
@@ -239,7 +240,7 @@ class LSection extends StatelessWidget {
     Key? key,
     this.title,
     required this.children,
-}) : super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -252,7 +253,8 @@ class LSection extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Text(
               title!,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style:
+                  const TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
             ),
           ),
         Column(
