@@ -101,8 +101,26 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
               foodItem.label,
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            subtitle: Text(
-              'Calories: ${foodItem.getNutrientDetails("calories")}',
+            subtitle: RichText(
+              text: TextSpan(
+                style: Theme.of(context).textTheme.bodySmall,
+                children: [
+                  TextSpan(
+                    text:
+                        'Proteins: ${foodItem.getNutrientDetails("PROCNT")}g, ',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(
+                    text:
+                        'Carbs: ${foodItem.getNutrientDetails("CHOCDF.net")}g, ',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(
+                    text: 'Fats: ${foodItem.getNutrientDetails("FAT")}g\n',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
             ),
             subtitleTextStyle: Theme.of(context).textTheme.bodySmall,
             trailing: PopupMenuButton<String>(
