@@ -1,4 +1,3 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 import 'dart:async';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter/foundation.dart';
