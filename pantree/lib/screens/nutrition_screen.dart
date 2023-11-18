@@ -174,6 +174,7 @@ class _NutritionScreenState extends State<nutrition_screen> {
         onFoodInventoryTap: () {},
         onNutritionTap: () {},
         onSettingsTap: () {},
+        onRecipesTap: () {},
       ),
     );
   }
