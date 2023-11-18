@@ -6,6 +6,7 @@ import 'package:pantree/screens/food_inventory_screen.dart';
 import 'package:pantree/screens/logout_screen.dart';
 import 'package:pantree/screens/nutrition_screen.dart';
 import 'package:pantree/screens/settings_screen.dart';
+import 'package:pantree/screens/weight_tracking.dart';
 import 'package:pantree/services/foodService.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart'; // Import FoodService to fetch user-specific food items
 
@@ -33,6 +34,7 @@ class _AuthPageState extends State<AuthPage> {
         foodItems: [], 
         onFoodItemSelected: _onFoodItemSelected
       ),
+      WeightTrack(),
       nutrition_screen(),
       settings_screen(),
       logout()
@@ -44,6 +46,12 @@ class _AuthPageState extends State<AuthPage> {
         PersistentBottomNavBarItem(
           icon: Icon(Icons.list),
           title: "Food Inventory",
+          activeColorPrimary: Theme.of(context).colorScheme.primary,
+          inactiveColorPrimary: Theme.of(context).colorScheme.secondary
+        ),
+        PersistentBottomNavBarItem(
+          icon: Icon(Icons.line_axis),
+          title: "Weight Tracking",
           activeColorPrimary: Theme.of(context).colorScheme.primary,
           inactiveColorPrimary: Theme.of(context).colorScheme.secondary
         ),
