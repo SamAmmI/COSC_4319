@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pantree/components/food_image.dart';
 import 'package:pantree/services/foodService.dart';
 import 'package:pantree/models/food_item.dart';
-import 'package:pantree/services/user_consumption.dart';
+import 'package:pantree/services/user_consumption_service.dart';
 
 class searchFoodToConsume extends StatefulWidget {
   const searchFoodToConsume(
