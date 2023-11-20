@@ -7,6 +7,7 @@ import 'package:pantree/components/food_image.dart';
 import 'package:pantree/services/food_manager.dart';
 import 'package:pantree/services/foodService.dart';
 import 'package:pantree/auth/auth.dart'; // Import FoodService
+import 'package:pantree/components/settings_drawer.dart';
 
 class FoodInventoryScreen extends StatefulWidget {
   final List<FoodItem> foodItems;
@@ -74,20 +75,10 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
         ),
         centerTitle: true,
       ),
-      drawer: MyDrawer(
-        onSignOutTap: () {
-          // Implement sign out logic here
-        },
-        onFoodInventoryTap: () {
-          // Navigate to food inventory screen (optional: can implement additional logic if needed)
-        },
-        onNutritionTap: () {
-          // Navigate to nutrition screen (optional: can implement additional logic if needed)
-        },
+      drawer: Settings_Drawer(
         onSettingsTap: () {
           // Navigate to settings screen (optional: can implement additional logic if needed)
         },
-        onRecipesTap: () {},
       ),
       body: ListView.builder(
         itemCount: _userFoodItems.length,

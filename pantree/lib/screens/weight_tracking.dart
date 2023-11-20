@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pantree/components/button.dart';
 import 'package:pantree/components/drawer.dart';
+import 'package:pantree/components/settings_drawer.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class WeightTrack extends StatefulWidget {
@@ -53,12 +54,10 @@ class _WeightTrackState extends State<WeightTrack> {
         appBar: AppBar(
           title: const Text("Weight Tracking"),
         ),
-        drawer: MyDrawer(
-          onSignOutTap: () {},
-          onNutritionTap: () {},
-          onFoodInventoryTap: () {},
-          onSettingsTap: () {},
-          onRecipesTap: () {},
+        drawer: Settings_Drawer(
+          onSettingsTap: () {
+            // Navigate to settings screen (optional: can implement additional logic if needed)
+          },
         ),
         body: Column(
           children: [

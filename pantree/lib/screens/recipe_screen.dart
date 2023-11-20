@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pantree/components/drawer.dart';
 import 'package:pantree/components/recipe_view.dart';
+import 'package:pantree/components/settings_drawer.dart';
 import 'package:pantree/models/recipe_models.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -50,12 +51,10 @@ class _recipeScreenState extends State<recipe_screen> {
           ),
           centerTitle: true,
         ),
-        drawer: MyDrawer(
-          onSignOutTap: () {},
-          onFoodInventoryTap: () {},
-          onNutritionTap: () {},
-          onSettingsTap: () {},
-          onRecipesTap: () {},
+        drawer: Settings_Drawer(
+          onSettingsTap: () {
+            // Navigate to settings screen (optional: can implement additional logic if needed)
+          },
         ),
         body: Stack(
           children: <Widget>[

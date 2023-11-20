@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pantree/components/drawer.dart';
+import 'package:pantree/components/settings_drawer.dart';
 import 'package:pantree/models/user_profile.dart';
 import 'package:pantree/screens/log_food_screen.dart';
 import 'package:pantree/screens/nutritional_preferences.dart';
@@ -168,12 +169,10 @@ class _NutritionScreenState extends State<nutrition_screen> {
         ),
       ),
 
-      drawer: MyDrawer(
-        onSignOutTap: () {},
-        onFoodInventoryTap: () {},
-        onNutritionTap: () {},
-        onSettingsTap: () {},
-        onRecipesTap: () {},
+      drawer: Settings_Drawer(
+        onSettingsTap: () {
+          // Navigate to settings screen (optional: can implement additional logic if needed)
+        },
       ),
     );
   }

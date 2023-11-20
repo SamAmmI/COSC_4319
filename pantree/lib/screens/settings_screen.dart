@@ -119,7 +119,6 @@ class LSection extends StatelessWidget {
 }*/
 
 import 'package:flutter/material.dart';
-import 'package:pantree/components/drawer.dart';
 import 'package:pantree/components/theme_notifier.dart';
 import 'package:pantree/screens/about_screen.dart';
 import 'package:pantree/screens/userprofile_screen.dart';
@@ -145,13 +144,12 @@ class _settings_screenState extends State<settings_screen> {
           style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
         centerTitle: true,
-      ),
-      drawer: MyDrawer(
-        onSignOutTap: () {},
-        onFoodInventoryTap: () {},
-        onNutritionTap: () {},
-        onSettingsTap: () {},
-        onRecipesTap: () {},
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: Center(
         child: Container(
@@ -176,10 +174,11 @@ class _settings_screenState extends State<settings_screen> {
                     title: "Theme",
                     icon: Icons.dark_mode_outlined,
                     trailing: Switch(
-                        value: themeNotifier.currentTheme == darkTheme,
-                        onChanged: (value) {
-                          themeNotifier.toggleTheme();
-                        }),
+                      value: themeNotifier.currentTheme == darkTheme,
+                      onChanged: (value) {
+                        themeNotifier.toggleTheme();
+                      },
+                    ),
                   ),
                 ],
               ),

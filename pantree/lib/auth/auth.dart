@@ -14,6 +14,7 @@ import 'package:pantree/screens/settings_screen.dart';
 import 'package:pantree/screens/weight_tracking.dart';
 import 'package:pantree/services/foodService.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:pantree/screens/recipe_screen.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({Key? key});
@@ -48,10 +49,9 @@ class _AuthPageState extends State<AuthPage> {
     return [
       FoodInventoryScreen(
           foodItems: [], onFoodItemSelected: _onFoodItemSelected),
-      WeightTrack(),
+      recipe_screen(),
       nutrition_screen(),
-      settings_screen(),
-      logout()
+      WeightTrack(),
     ];
   }
 
@@ -63,8 +63,8 @@ class _AuthPageState extends State<AuthPage> {
           activeColorPrimary: Theme.of(context).colorScheme.primary,
           inactiveColorPrimary: Theme.of(context).colorScheme.secondary),
       PersistentBottomNavBarItem(
-          icon: Icon(Icons.line_axis),
-          title: "Weight Tracking",
+          icon: Icon(Icons.menu_book),
+          title: "Recipes",
           activeColorPrimary: Theme.of(context).colorScheme.primary,
           inactiveColorPrimary: Theme.of(context).colorScheme.secondary),
       PersistentBottomNavBarItem(
@@ -73,13 +73,8 @@ class _AuthPageState extends State<AuthPage> {
           activeColorPrimary: Theme.of(context).colorScheme.primary,
           inactiveColorPrimary: Theme.of(context).colorScheme.secondary),
       PersistentBottomNavBarItem(
-          icon: Icon(Icons.settings),
-          title: "Settings",
-          activeColorPrimary: Theme.of(context).colorScheme.primary,
-          inactiveColorPrimary: Theme.of(context).colorScheme.secondary),
-      PersistentBottomNavBarItem(
-          icon: Icon(Icons.logout),
-          title: "Logout",
+          icon: Icon(Icons.line_axis),
+          title: "Weight Tracking",
           activeColorPrimary: Theme.of(context).colorScheme.primary,
           inactiveColorPrimary: Theme.of(context).colorScheme.secondary),
     ];
