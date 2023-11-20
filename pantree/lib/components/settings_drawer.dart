@@ -72,12 +72,12 @@ class _Settings_DrawerState extends State<Settings_Drawer> {
           ),
           IconButton(
             icon: themeNotifier.currentTheme == lightTheme
-                ? Icon(Icons.wb_sunny) // Sun icon for light theme
-                : Icon(Icons.nights_stay), // Moon icon for dark theme
+                ? Icon(Icons.wb_sunny, color: Theme.of(context).iconTheme.color)
+                : Icon(Icons.nights_stay,
+                    color: Theme.of(context).iconTheme.color),
             onPressed: () {
               toggleTheme(themeNotifier);
             },
-            color: Theme.of(context).iconTheme.color,
           ),
         ],
       ),
