@@ -41,6 +41,16 @@ class FoodService {
         .delete();
   }
 
+  // deleting food item from user utilzing the foodId directly for the consumption
+  Future<void> consumedFoodItem(String foodId, String userId) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('foodItems')
+        .doc(foodId)
+        .delete();
+  }
+
   Future<FoodItem?> searchOrAddFood(String foodName) async {
     const String apiURL = 'https://api.edamam.com/api/food-database/v2/parser';
     const String appId = 'f11d8162';
@@ -90,6 +100,19 @@ class FoodService {
     if (doc.data() != null) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       return data['image'];
+    }
+    return null;
+  }
+
+  Future<DocumentSnapshot?> getFoodItemDocSnapshot(String foodId) async {
+    try {
+      final QuerySnapshot snapshot =
+          await foodItems.where('foodId', isEqualTo: foodId).get();
+      if (snapshot.docs.isNotEmpty) {
+        return snapshot.docs.first;
+      }
+    } catch (e) {
+      print('Error fetching document snapshot: $e');
     }
     return null;
   }

@@ -129,7 +129,10 @@ class InitialRegistrationState extends State<InitialRegistration> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Initial Registration')),
+      appBar: AppBar(
+        title: Text('Initial Registration'),
+        centerTitle: true,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(

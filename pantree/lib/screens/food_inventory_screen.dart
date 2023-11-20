@@ -196,7 +196,7 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
   void _deleteFoodItem(FoodItem foodItem) async {
     try {
       // Delete the food item from Firebase
-      await FoodService().deleteUserFoodItem(foodItem, _userId as String);
+      await FoodService().deleteUserFoodItem(foodItem, _userId);
 
       // Notify parent screen about the update
       _getUserFoodItems();

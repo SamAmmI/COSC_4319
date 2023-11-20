@@ -52,6 +52,18 @@ ThemeData lightTheme = ThemeData(
       fontSize: 12,
       fontWeight: FontWeight.normal,
     ),
+    headlineSmall: TextStyle(
+      fontFamily: 'Montserrat',
+      color: Color.fromRGBO(20, 24, 27, 1),
+      fontSize: 12,
+      fontWeight: FontWeight.bold,
+    ),
+    labelSmall: TextStyle(
+      fontFamily: 'Montserrat',
+      color: Color.fromRGBO(20, 24, 27, 1),
+      fontSize: 8,
+      fontWeight: FontWeight.normal,
+    ),
   ),
   inputDecorationTheme: InputDecorationTheme(
     hintStyle: TextStyle(
@@ -123,7 +135,19 @@ ThemeData darkTheme = ThemeData(
     bodySmall: TextStyle(
       fontFamily: 'Montserrat',
       color: Colors.grey[300],
+      fontSize: 12,
+      fontWeight: FontWeight.normal,
+    ),
+    headlineSmall: TextStyle(
+      fontFamily: 'Montserrat',
+      color: Colors.grey[300],
       fontSize: 10,
+      fontWeight: FontWeight.bold,
+    ),
+    labelSmall: TextStyle(
+      fontFamily: 'Montserrat',
+      color: Colors.grey[300],
+      fontSize: 8,
       fontWeight: FontWeight.normal,
     ),
   ),
