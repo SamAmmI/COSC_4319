@@ -157,15 +157,26 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          // Wait for the SearchFood screen to return a result
+          final result = await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => SearchFood(
                 userId: _userId,
+                onItemAdded: () {
+                  // Callback function to refresh the food items after adding
+                  _getUserFoodItems();
+                },
               ),
             ),
           );
+
+          // Handle the result if needed
+          // For example, you can check if the result is not null and take action
+          if (result != null) {
+            // Do something with the result
+          }
         },
         child: const Icon(Icons.add),
         backgroundColor: Color(0xFF1e643b),

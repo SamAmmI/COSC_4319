@@ -5,7 +5,11 @@ import 'package:pantree/services/foodService.dart';
 import 'package:pantree/models/food_item.dart';
 
 class SearchFood extends StatefulWidget {
-  const SearchFood({Key? key, required String userId}) : super(key: key);
+  final String userId;
+  final VoidCallback? onItemAdded;
+
+  const SearchFood({Key? key, required this.userId, this.onItemAdded})
+      : super(key: key);
 
   @override
   SearchFoodState createState() => SearchFoodState();
@@ -22,6 +26,12 @@ class SearchFoodState extends State<SearchFood> {
     try {
       String userId = FirebaseAuth.instance.currentUser!.uid;
       await foodService.addFoodItemToUserDatabase(userId, foodItem);
+
+      // Call the callback function to notify the FoodInventoryScreen
+      if (widget.onItemAdded != null) {
+        widget.onItemAdded!();
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Food item added to your database')),
       );

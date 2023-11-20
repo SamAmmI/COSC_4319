@@ -96,13 +96,13 @@ class _NutriTrackState extends State<NutriTrack> {
       appBar: AppBar(
         title: Text("Daily Nutrition Tracking",
             style: TextStyle(color: Theme.of(context).colorScheme.primary)),
-      ),
-      drawer: MyDrawer(
-        onSignOutTap: () {},
-        onNutritionTap: () {},
-        onFoodInventoryTap: () {},
-        onSettingsTap: () {},
-        onRecipesTap: () {},
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context)
+                .pop(); // Add this line to perform back navigation
+          },
+        ),
       ),
       body: Column(children: [
         PieChart(dataMap: eatenMacros),
