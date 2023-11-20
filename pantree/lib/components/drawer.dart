@@ -28,20 +28,6 @@ class MyDrawer extends StatefulWidget {
 }
 
 class _MyDrawerState extends State<MyDrawer> {
-  void signOut() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => LoginOrRegister(
-                onTap: () {},
-              )));
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error signing out: $e')),
-      );
-    }
-  }
-
   void nutritionScreen() {
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => const nutrition_screen()));
@@ -71,6 +57,10 @@ class _MyDrawerState extends State<MyDrawer> {
         MaterialPageRoute(
           builder: (context) => recipe_screen(),
         ));
+  }
+
+  void signOut() {
+    FirebaseAuth.instance.signOut();
   }
 
   @override
@@ -109,7 +99,10 @@ class _MyDrawerState extends State<MyDrawer> {
                     text: "Settings",
                     onTap: settingsScreen),
               ),
-              MyListTile(icon: Icons.logout, text: "Logout", onTap: signOut)
+              Padding(
+                  padding: const EdgeInsets.only(top: 1),
+                  child: MyListTile(
+                      icon: Icons.logout, text: "Logout", onTap: signOut))
             ])
           ],
         ));

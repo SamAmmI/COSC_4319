@@ -8,6 +8,12 @@ import 'package:pantree/services/foodService.dart'; // Import FoodService to fet
 import 'package:pantree/services/user_service.dart';
 import 'package:pantree/models/user_profile.dart';
 import 'package:pantree/models/local_user_manager.dart';
+import 'package:pantree/screens/logout_screen.dart';
+import 'package:pantree/screens/nutrition_screen.dart';
+import 'package:pantree/screens/settings_screen.dart';
+import 'package:pantree/screens/weight_tracking.dart';
+import 'package:pantree/services/foodService.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({Key? key});
@@ -37,6 +43,48 @@ class _AuthPageState extends State<AuthPage> {
     print('Selected Food Item: $foodItem');
   }
 
+  PersistentTabController controller = PersistentTabController(initialIndex: 0);
+  List<Widget> _buildScreens() {
+    return [
+      FoodInventoryScreen(
+          foodItems: [], onFoodItemSelected: _onFoodItemSelected),
+      WeightTrack(),
+      nutrition_screen(),
+      settings_screen(),
+      logout()
+    ];
+  }
+
+  List<PersistentBottomNavBarItem> items() {
+    return [
+      PersistentBottomNavBarItem(
+          icon: Icon(Icons.list),
+          title: "Food Inventory",
+          activeColorPrimary: Theme.of(context).colorScheme.primary,
+          inactiveColorPrimary: Theme.of(context).colorScheme.secondary),
+      PersistentBottomNavBarItem(
+          icon: Icon(Icons.line_axis),
+          title: "Weight Tracking",
+          activeColorPrimary: Theme.of(context).colorScheme.primary,
+          inactiveColorPrimary: Theme.of(context).colorScheme.secondary),
+      PersistentBottomNavBarItem(
+          icon: Icon(Icons.food_bank),
+          title: "Nutrition",
+          activeColorPrimary: Theme.of(context).colorScheme.primary,
+          inactiveColorPrimary: Theme.of(context).colorScheme.secondary),
+      PersistentBottomNavBarItem(
+          icon: Icon(Icons.settings),
+          title: "Settings",
+          activeColorPrimary: Theme.of(context).colorScheme.primary,
+          inactiveColorPrimary: Theme.of(context).colorScheme.secondary),
+      PersistentBottomNavBarItem(
+          icon: Icon(Icons.logout),
+          title: "Logout",
+          activeColorPrimary: Theme.of(context).colorScheme.primary,
+          inactiveColorPrimary: Theme.of(context).colorScheme.secondary),
+    ];
+  }
+
   // method that will check that the user has all necessary values for application
   bool profileCheck(UserProfile profile) {
     return profile.firstName.isNotEmpty &&
@@ -63,42 +111,42 @@ class _AuthPageState extends State<AuthPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snapshot) {
-            // NO ONE LOGGED IN CURRENTLY, ROUTES TO LOG OR REGISTER
-            if (!snapshot.hasData) {
-              return LoginOrRegister(onTap: () {});
-            }
-
-            // USER LOGGED IN NOW CHECKING FOR PROFILE STATUS
-            return FutureBuilder<bool>(
-              future: checkUserRegistration(),
-              builder: (context, profileSnapshot) {
-                // IF USER PROFILE IS NOT COMPLETE
-                if (!profileSnapshot.hasData || !profileSnapshot.data!) {
-                  return InitialRegistration();
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return FutureBuilder<List<FoodItem>>(
+              future: foodService
+                  .getUserFoodItems(FirebaseAuth.instance.currentUser!.uid),
+              builder: (context, foodItemsSnapshot) {
+                if (foodItemsSnapshot.connectionState ==
+                    ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (foodItemsSnapshot.hasError) {
+                  return Center(child: Text('Error fetching food items'));
+                } else {
+                  return PersistentTabView(
+                    context,
+                    controller: controller,
+                    screens: _buildScreens(),
+                    items: items(),
+                    confineInSafeArea: true,
+                    backgroundColor: Theme.of(context).colorScheme.background,
+                    handleAndroidBackButtonPress: true,
+                    resizeToAvoidBottomInset: true,
+                    stateManagement: true,
+                    hideNavigationBarWhenKeyboardShows: true,
+                    popAllScreensOnTapOfSelectedTab: true,
+                    popActionScreens: PopActionScreensType.all,
+                    navBarStyle: NavBarStyle.style1,
+                  );
                 }
-
-                //USER LOGGED IN AND PROFILE IS COMPLETE
-                return FutureBuilder<List<FoodItem>>(
-                    future: foodService.getUserFoodItems(
-                        FirebaseAuth.instance.currentUser!.uid),
-                    builder: (context, foodItemsSnapshot) {
-                      if (foodItemsSnapshot.connectionState ==
-                          ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      }
-                      if (foodItemsSnapshot.hasError) {
-                        return Center(child: Text('Error fetching food items'));
-                      }
-                      return FoodInventoryScreen(
-                        foodItems: foodItemsSnapshot.data ?? [],
-                        onFoodItemSelected: _onFoodItemSelected,
-                      );
-                    });
               },
             );
-          }),
+          } else {
+            return LoginOrRegister(onTap: () {});
+          }
+        },
+      ),
     );
   }
 }

@@ -20,6 +20,16 @@ class _RegisterPageState extends State<RegisterPage> {
   final lastNameTextController = TextEditingController();
 
   void nextPage() async {
+    RegExp reg =
+        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+    if (!reg.hasMatch(passTextController.text)) {
+      showDialog(
+          context: context,
+          builder: (context) => const AlertDialog(
+              title: Text("Please Enter Valid Password"),
+              content: Text(
+                  "Passwords must contain:\nAt least one capital letter\nAt least one lowercase letter\nAt least one number\nAt least one special character\nAt least 8 characters long")));
+    }
     if (passTextController.text != confirmPassTextController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Passwords do not match")),
