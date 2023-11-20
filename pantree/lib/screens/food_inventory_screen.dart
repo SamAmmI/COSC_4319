@@ -87,6 +87,7 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
         onSettingsTap: () {
           // Navigate to settings screen (optional: can implement additional logic if needed)
         },
+        onRecipesTap: () {},
       ),
       body: ListView.builder(
         itemCount: _userFoodItems.length,

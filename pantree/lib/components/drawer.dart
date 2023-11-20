@@ -5,18 +5,22 @@ import 'package:pantree/components/list_tile.dart';
 import 'package:pantree/screens/food_inventory_screen.dart';
 import 'package:pantree/screens/nutrition_screen.dart';
 import 'package:pantree/screens/settings_screen.dart';
+import 'package:pantree/screens/recipe_screen.dart';
 
 class MyDrawer extends StatefulWidget {
   final Function()? onSignOutTap;
   final Function()? onNutritionTap;
   final Function()? onFoodInventoryTap;
   final Function()? onSettingsTap;
+  final Function()? onRecipesTap;
+
   const MyDrawer({
     super.key,
     required this.onSignOutTap,
     required this.onNutritionTap,
     required this.onFoodInventoryTap,
     required this.onSettingsTap,
+    required this.onRecipesTap,
   });
 
   @override
@@ -61,6 +65,14 @@ class _MyDrawerState extends State<MyDrawer> {
         ));
   }
 
+  void recipeScreen() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => recipe_screen(),
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -82,6 +94,13 @@ class _MyDrawerState extends State<MyDrawer> {
                     icon: Icons.list,
                     text: "Food Inventory",
                     onTap: foodInventory),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 1),
+                child: MyListTile(
+                    icon: Icons.library_books,
+                    text: "Recipes",
+                    onTap: recipeScreen),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 1),

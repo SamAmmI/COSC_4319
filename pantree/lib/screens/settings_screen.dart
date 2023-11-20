@@ -151,6 +151,7 @@ class _settings_screenState extends State<settings_screen> {
         onFoodInventoryTap: () {},
         onNutritionTap: () {},
         onSettingsTap: () {},
+        onRecipesTap: () {},
       ),
       body: Center(
         child: Container(
