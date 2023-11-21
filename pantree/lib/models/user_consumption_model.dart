@@ -25,10 +25,10 @@ class UserConsumption {
     totalCalories = totalProteins = totalCarbs = totalFats = 0.0;
 
     for (FoodItem item in foodItems) {
-      totalCalories += (item.nutrients['ENERC_KCAL'] as double? ?? 0.0);
-      totalProteins += (item.nutrients['PROCNT'] as double? ?? 0.0);
-      totalCarbs += (item.nutrients['CHOCDF'] as double? ?? 0.0);
-      totalFats += (item.nutrients['FAT'] as double? ?? 0.0);
+      totalCalories += (item.nutrients?['ENERC_KCAL'] as double? ?? 0.0);
+      totalProteins += (item.nutrients?['PROCNT'] as double? ?? 0.0);
+      totalCarbs += (item.nutrients?['CHOCDF'] as double? ?? 0.0);
+      totalFats += (item.nutrients?['FAT'] as double? ?? 0.0);
     }
   }
 
