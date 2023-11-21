@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pantree/components/drawer.dart';
 import 'package:pantree/components/settings_drawer.dart';
 import 'package:pantree/models/user_profile.dart';
+import 'package:pantree/screens/daily_consumptionBarGraph.dart';
 import 'package:pantree/screens/logFoodConsumption.dart';
 import 'package:pantree/screens/log_food_screen.dart';
 import 'package:pantree/screens/nutritional_preferences.dart';
@@ -10,7 +11,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pantree/models/local_user_manager.dart';
 import 'package:pantree/components/info_card1.dart';
 import 'package:pantree/components/vertical_info_card.dart';
-import 'package:pantree/services/user_consumption.dart';
+import 'package:pantree/services/user_consumption_service.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 class NutritionCard extends StatelessWidget {
@@ -81,7 +82,7 @@ class NutritionCard extends StatelessWidget {
       Colors.red
     ]; // Customize your colors
 
-    double fixedChartRadius = 200; // Example fixed radius
+    double fixedChartRadius = 200;
 
     return Container(
       width: 300,
@@ -91,7 +92,7 @@ class NutritionCard extends StatelessWidget {
         animationDuration: Duration(milliseconds: 800),
         chartLegendSpacing: 32,
         chartRadius: fixedChartRadius,
-        colorList: colorList, // Use colorList for segment colors
+        colorList: colorList,
         initialAngleInDegree: 0,
         chartType: ChartType.ring,
         ringStrokeWidth: 28,
@@ -121,6 +122,7 @@ class nutrition_screen extends StatefulWidget {
 class _NutritionScreenState extends State<nutrition_screen> {
   String? userEmail;
   UserProfile? userProfile;
+  ConsumptionService? consumptionService;
 
   // USER ATTRIBUTES NEEDED FOR THIS SCREEN
   double? calories;
@@ -128,6 +130,7 @@ class _NutritionScreenState extends State<nutrition_screen> {
   double? carbs;
   double? fat;
   String? firstName;
+  double? caloriesConsumed;
 
   @override
   void initState() {
@@ -168,7 +171,7 @@ class _NutritionScreenState extends State<nutrition_screen> {
 
       //BELOW IS THE BODY OF THE SCREEN
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -184,11 +187,10 @@ class _NutritionScreenState extends State<nutrition_screen> {
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 5),
-            //NEW IMPLEMENTATION USING INFOCARD1
             SingleChildScrollView(
               child: Column(
                 children: [
-                  // Card 1: User Consumption Details
+                  // CARD 1 USER CONSUMPTION DETAILS
                   Container(
                     width: 400,
                     child: InfoCard(
@@ -210,14 +212,55 @@ class _NutritionScreenState extends State<nutrition_screen> {
                       },
                     ),
                   ),
-                  SizedBox(height: 20),
+                  //CARD 2 IMPLEMENTING USING NUTRITION CARD
+                  Container(
+                    child: FutureBuilder<Map<String, double>>(
+                      future: ConsumptionService().fetchDailyConsumptionData(
+                        FirebaseAuth.instance.currentUser?.uid ?? '',
+                        DateTime.now(), // Current date
+                      ),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        }
 
-                  // Card 2: Log Meal Button
+                        if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        }
+
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return Text('No nutritional data available');
+                        }
+
+                        // CARD 3 CREATE THE NUTRITION CARD WITH THE SAVED DATA
+                        return NutritionCard(
+                          nutritionalData: snapshot.data,
+                          calories: calories,
+                          protein: protein,
+                          carbs: carbs,
+                          fat: fat,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const DailyConsumptionScreenGraph(),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 10),
+
+                  // CARD 3 'LOG MEAL' BUTTON
                   Row(
                     children: [
                       Expanded(
                         child: Container(
-                          height: 200, // Increased height to avoid overflow
+                          height: 100,
                           child: VerticalInfoCard(
                             title: 'Log Food',
                             subtitle: '',
@@ -229,7 +272,8 @@ class _NutritionScreenState extends State<nutrition_screen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const MealLogScreen(),
+                                  builder: (context) =>
+                                      const LogFoodConsumption(),
                                 ),
                               );
                             },
@@ -239,9 +283,10 @@ class _NutritionScreenState extends State<nutrition_screen> {
                       SizedBox(
                         width: 20,
                       ),
+                      // CARD 3 'NUTRITIONAL PREFERENCES BUTTON
                       Expanded(
                         child: Container(
-                          height: 200, // Increased height to avoid overflow
+                          height: 100,
                           child: VerticalInfoCard(
                             title: 'Nutritional \nPreferences',
                             subtitle: '',

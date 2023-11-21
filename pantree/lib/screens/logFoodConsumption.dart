@@ -5,7 +5,7 @@ import 'package:pantree/models/local_user_manager.dart';
 import 'package:pantree/models/user_profile.dart';
 import 'package:pantree/screens/searchFoodToConsume.dart';
 import 'package:pantree/screens/food_inventory_screen.dart';
-import 'package:pantree/services/user_consumption.dart';
+import 'package:pantree/services/user_consumption_service.dart';
 
 class LogFoodConsumption extends StatefulWidget {
   const LogFoodConsumption({Key? key}) : super(key: key);
