@@ -42,6 +42,16 @@ class SearchFoodState extends State<SearchFood> {
     }
   }
 
+  String nutrientsToText(Map<String, dynamic>? nutrients) {
+    if (nutrients == null) {
+      return 'Nutrient information not available';
+    }
+
+    return nutrients.entries
+        .map((e) => '${searchedItem!.getNutrientDetails(e.key)}: ${e.value}')
+        .join('\n');
+  }
+
   Future<void> handleSearch() async {
     final foodName = searchController.text;
     setState(() {
@@ -63,12 +73,6 @@ class SearchFoodState extends State<SearchFood> {
         isLoading = false;
       });
     }
-  }
-
-  String nutrientsToText(Map<String, dynamic> nutrients) {
-    return nutrients.entries
-        .map((e) => '${searchedItem!.getNutrientDetails(e.key)}: ${e.value}')
-        .join('\n');
   }
 
   @override

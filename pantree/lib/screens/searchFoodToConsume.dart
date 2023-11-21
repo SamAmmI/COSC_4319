@@ -6,18 +6,18 @@ import 'package:pantree/services/foodService.dart';
 import 'package:pantree/models/food_item.dart';
 import 'package:pantree/services/user_consumption.dart';
 
-class searchFoodToConsume extends StatefulWidget {
-  const searchFoodToConsume(
-      {Key? key,
-      required String userId,
-      required Null Function(dynamic foodItemDoc) onFoodItemSelected})
-      : super(key: key);
+class SearchFoodToConsume extends StatefulWidget {
+  const SearchFoodToConsume({
+    Key? key,
+    required String userId,
+    required Null Function(dynamic foodItemDoc) onFoodItemSelected,
+  }) : super(key: key);
 
   @override
-  searchFoodToConsumeState createState() => searchFoodToConsumeState();
+  _SearchFoodToConsumeState createState() => _SearchFoodToConsumeState();
 }
 
-class searchFoodToConsumeState extends State<searchFoodToConsume> {
+class _SearchFoodToConsumeState extends State<SearchFoodToConsume> {
   final TextEditingController searchController = TextEditingController();
   FoodItem? searchedItem;
   String? errorMsg;
@@ -36,14 +36,23 @@ class searchFoodToConsumeState extends State<searchFoodToConsume> {
         DateTime date = DateTime.now();
 
         await consumptionService.logConsumptionAndUpdateTotals(
-            userId, date, selectedFoodItemDoc!, false, 1.0);
+          userId,
+          date,
+          selectedFoodItemDoc!,
+          false,
+          1.0,
+        );
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Food item added to your consumption log')),
+          SnackBar(
+            content: Text('Food item added to your consumption log'),
+          ),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to add food item: $e')),
+          SnackBar(
+            content: Text('Failed to add food item: $e'),
+          ),
         );
       }
     }
@@ -75,7 +84,11 @@ class searchFoodToConsumeState extends State<searchFoodToConsume> {
     }
   }
 
-  String nutrientsToText(Map<String, dynamic> nutrients) {
+  String nutrientsToText(Map<String, dynamic>? nutrients) {
+    if (nutrients == null) {
+      return ''; // or any default value
+    }
+
     return nutrients.entries
         .map((e) => '${searchedItem!.getNutrientDetails(e.key)}: ${e.value}')
         .join('\n');
@@ -133,9 +146,9 @@ class searchFoodToConsumeState extends State<searchFoodToConsume> {
                       children: [
                         const TextSpan(text: 'Food Name: '),
                         TextSpan(
-                            text: searchedItem!.label,
-                            style:
-                                const TextStyle(fontWeight: FontWeight.bold)),
+                          text: searchedItem!.label,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ],
                     ),
                   ),
@@ -154,7 +167,8 @@ class searchFoodToConsumeState extends State<searchFoodToConsume> {
                         ),
                       Expanded(
                         child: Text(
-                            '${searchedItem!.label} Nutrients:\n${nutrientsToText(searchedItem!.nutrients)}'),
+                          '${searchedItem!.label} Nutrients:\n${nutrientsToText(searchedItem!.nutrients)}',
+                        ),
                       ),
                     ],
                   ),
@@ -173,9 +187,10 @@ class searchFoodToConsumeState extends State<searchFoodToConsume> {
             ),
             if (isLoading)
               const Center(
-                  child: CircularProgressIndicator(
-                color: Colors.blue,
-              )),
+                child: CircularProgressIndicator(
+                  color: Colors.blue,
+                ),
+              ),
           ],
         ),
       ),

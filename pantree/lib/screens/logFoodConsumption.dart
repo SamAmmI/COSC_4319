@@ -59,7 +59,7 @@ class _LogFoodConsumptionState extends State<LogFoodConsumption> {
     }
   }
 
-// WHERE WE FETCH THE PROFILE AND ATTRIBUTES
+  // WHERE WE FETCH THE PROFILE AND ATTRIBUTES
   void fetchUserProfile() async {
     final localUserManager = LocalUserManager();
     userProfile = localUserManager.getCachedUser();
@@ -70,11 +70,11 @@ class _LogFoodConsumptionState extends State<LogFoodConsumption> {
       userProfile = localUserManager.getCachedUser();
     }
     if (userProfile != null) {
-      calories = localUserManager.getUserAttribute('Calories') as double?;
-      protein = localUserManager.getUserAttribute('Protein') as double?;
-      carbs = localUserManager.getUserAttribute('Carbs') as double?;
-      fat = localUserManager.getUserAttribute('Fat') as double?;
-      firstName = localUserManager.getUserAttribute('firstName') as String?;
+      calories = userProfile!.calories;
+      protein = userProfile!.protein;
+      carbs = userProfile!.carbs;
+      fat = userProfile!.fat;
+      firstName = userProfile!.firstName;
     }
     setState(() {});
   }
@@ -104,7 +104,7 @@ class _LogFoodConsumptionState extends State<LogFoodConsumption> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => searchFoodToConsume(
+                  builder: (context) => SearchFoodToConsume(
                     userId: userId,
                     onFoodItemSelected: (foodItemDoc) {
                       logMeal(foodItemDoc as DocumentSnapshot);
@@ -141,6 +141,15 @@ class _LogFoodConsumptionState extends State<LogFoodConsumption> {
               },
             ),
           ),
+          // Display the nutritional information if available
+          if (calories != null &&
+              protein != null &&
+              carbs != null &&
+              fat != null)
+            Text(
+              'Nutritional Information:\nCalories: $calories\nProtein: $protein\nCarbs: $carbs\nFat: $fat',
+              style: TextStyle(fontSize: 16),
+            ),
         ],
       ),
     );

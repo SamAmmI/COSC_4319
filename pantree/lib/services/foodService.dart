@@ -14,12 +14,18 @@ class FoodService {
 
   Future<FoodItem> addFoodItemToUserDatabase(
       String userId, FoodItem food) async {
+    final now = DateTime.now();
+
     await FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
         .collection('foodItems')
         .doc(food.foodId)
-        .set(food.toMap());
+        .set({
+      ...food.toMap(),
+      'dateTime': now, // Add the date property
+    });
+
     return food;
   }
 
@@ -82,6 +88,7 @@ class FoodService {
           category: foodData['category'],
           categoryLabel: foodData['categoryLabel'],
           image: foodData['image'],
+          dateTime: null,
         );
 
         await addFoodItemToFirebase(food);
