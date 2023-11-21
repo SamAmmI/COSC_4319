@@ -24,9 +24,10 @@ class _EditNutrientScreenState extends State<EditNutrientScreen> {
     super.initState();
     // Initialize controllers with existing values
     proteinController.text =
-        widget.foodItem.nutrients['PROCNT'].toString() ?? '';
-    carbsController.text = widget.foodItem.nutrients['CHOCDF'].toString() ?? '';
-    fatsController.text = widget.foodItem.nutrients['FAT'].toString() ?? '';
+        widget.foodItem.nutrients?['PROCNT'].toString() ?? '';
+    carbsController.text =
+        widget.foodItem.nutrients?['CHOCDF'].toString() ?? '';
+    fatsController.text = widget.foodItem.nutrients?['FAT'].toString() ?? '';
   }
 
   @override
@@ -72,11 +73,11 @@ class _EditNutrientScreenState extends State<EditNutrientScreen> {
 
   void _updateNutrients() async {
     // Update the nutrient values
-    widget.foodItem.nutrients['PROCNT'] =
+    widget.foodItem.nutrients?['PROCNT'] =
         double.tryParse(proteinController.text) ?? 0.0;
-    widget.foodItem.nutrients['CHOCDF'] =
+    widget.foodItem.nutrients?['CHOCDF'] =
         double.tryParse(carbsController.text) ?? 0.0;
-    widget.foodItem.nutrients['FAT'] =
+    widget.foodItem.nutrients?['FAT'] =
         double.tryParse(fatsController.text) ?? 0.0;
 
     // Implement logic to update data in Firebase

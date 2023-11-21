@@ -9,7 +9,7 @@ class UserProfile {
   String lastName;
 
   // nullable attributes up to user if they want to provide these details
-  double? height; //needs to be in m
+  double? height; // needs to be in m
   double? weight;
   double? age;
   double? goalWeight; // needs to be in kg
@@ -19,7 +19,6 @@ class UserProfile {
   double? proteinGoal;
   double? fatGoal;
 
-  //class constructor
   UserProfile({
     required this.userID,
     required this.firstName,
@@ -30,18 +29,26 @@ class UserProfile {
     double? goalWeight,
     String? sex,
   }) : super() {
-    // where we set the user's inital macro goals
+    // where we set the user's initial macro goals
     this.height = height;
     this.weight = weight;
     this.age = age;
     this.sex = sex;
 
-    Map<String, dynamic> inititalMacroCalc = calcMacros();
-    calorieGoal = inititalMacroCalc['Calories'];
-    carbGoal = inititalMacroCalc['Carbs'];
-    proteinGoal = inititalMacroCalc['Protein'];
-    fatGoal = inititalMacroCalc['Fat'];
+    Map<String, double> initialMacroCalc = calcMacros();
+    calorieGoal = initialMacroCalc['Calories'];
+    carbGoal = initialMacroCalc['Carbs'];
+    proteinGoal = initialMacroCalc['Protein'];
+    fatGoal = initialMacroCalc['Fat'];
   }
+
+  double? get protein => null;
+
+  double? get calories => null;
+
+  double? get carbs => null;
+
+  double? get fat => null;
 
   // method to store user data into firebase
   Map<String, dynamic> toMap() {
@@ -64,7 +71,6 @@ class UserProfile {
     };
   }
 
-  // factory method, used to either create a new 'User' or return existing 'User' from firebase
   factory UserProfile.fromMap(Map<String, dynamic> map) {
     return UserProfile(
       userID: map['userID'] ?? '',
@@ -82,20 +88,8 @@ class UserProfile {
       ..fatGoal = map['Macros']['Fat'];
   }
 
-  /* BELOW IS WHERE WE CALC NUTRITIONAL GOALS PER USER
-     - Mifflin-St Jeor Equation is used for calculating BMR
-        For men: BMR = 10 * weight (kg) + 6.25 * height (cm) - 5 * age (y) + 5
-        For women: BMR = 10 * weight (kg) + 6.25 * height (cm) - 5 * age (y) - 161
-
-     - TDEE is estimated by multiplying the BMR by an activity factor
-        using a general constant of (1.2) for general use
-
-     - We then use both of these to calculate macros per user
-  */
-  // BMR calculation adjusted for US customary units
   double calcBMR() {
-    double weightKg = poundsToKg(weight!); // Ensure 'weight' is in pounds
-
+    double weightKg = poundsToKg(weight!);
     if (sex == 'M') {
       return 10 * weightKg + 6.25 * height! - 5 * age! + 5;
     } else {
@@ -103,12 +97,10 @@ class UserProfile {
     }
   }
 
-  // Conversion helper methods
   double poundsToKg(double pounds) {
     return pounds / 2.20462;
   }
 
-  // TDEE calculation remains the same as it uses the output from calcBMR
   double calcTDEE() {
     double bmr = calcBMR();
     double activity =
@@ -118,19 +110,12 @@ class UserProfile {
 
   Map<String, double> calcMacros() {
     double TDEE = calcTDEE();
-
-    // using base calc 50% carbs, 20% protein, 30% fat
     double carbs = TDEE * .5 / 4; // calories per gram
     double protein = TDEE * .2 / 4; // calories per gram
     double fat = TDEE * .3 / 9; // calories per gram
-
     return {'Calories': TDEE, 'Carbs': carbs, 'Protein': protein, 'Fat': fat};
   }
 
-  //CONVERSION METHODS BECAUSE OF AMERICAN NUMERICAL STANDARDS
-  numericalConversion(double value) {}
-
-  //METHOD TO UPDATE ANY GOALS TRIGGERED BY USER
   void updateGoals(String macro, double value) {
     switch (macro) {
       case 'Calories':

@@ -1,50 +1,92 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pantree/components/food_image.dart';
 import 'package:pantree/services/foodService.dart';
 import 'package:pantree/models/food_item.dart';
+import 'package:pantree/services/user_consumption_service.dart';
 
-class SearchFood extends StatefulWidget {
-  final String userId;
-  final VoidCallback? onItemAdded;
-
-  const SearchFood({Key? key, required this.userId, this.onItemAdded})
-      : super(key: key);
+class SearchFoodToConsume extends StatefulWidget {
+  const SearchFoodToConsume({
+    Key? key,
+    required String userId,
+    required Null Function(dynamic foodItemDoc) onFoodItemSelected,
+  }) : super(key: key);
 
   @override
-  SearchFoodState createState() => SearchFoodState();
+  _SearchFoodToConsumeState createState() => _SearchFoodToConsumeState();
 }
 
-class SearchFoodState extends State<SearchFood> {
+class _SearchFoodToConsumeState extends State<SearchFoodToConsume> {
   final TextEditingController searchController = TextEditingController();
   FoodItem? searchedItem;
   String? errorMsg;
   bool isLoading = false;
   final FoodService foodService = FoodService();
+  final ConsumptionService consumptionService = ConsumptionService.instance;
 
-  void addToUserDatabase(FoodItem foodItem) async {
-    try {
-      String userId = FirebaseAuth.instance.currentUser!.uid;
-      await foodService.addFoodItemToUserDatabase(userId, foodItem);
+  // Add a field to store the selected food item document.
+  DocumentSnapshot? selectedFoodItemDoc;
 
-      // Call the callback function to notify the FoodInventoryScreen
-      if (widget.onItemAdded != null) {
-        widget.onItemAdded!();
+  // Method to call when adding the selected food item to consumption.
+  void addToConsumption() async {
+    if (selectedFoodItemDoc != null) {
+      try {
+        String userId = FirebaseAuth.instance.currentUser!.uid;
+        DateTime date = DateTime.now();
+
+        await consumptionService.logConsumptionAndUpdateTotals(
+          userId,
+          date,
+          selectedFoodItemDoc!,
+          false,
+          1.0,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Food item added to your consumption log'),
+          ),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to add food item: $e'),
+          ),
+        );
       }
+    }
+  }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Food item added to your database')),
-      );
+  Future<void> handleSearch() async {
+    final foodName = searchController.text;
+    setState(() => isLoading = true);
+
+    try {
+      final foodItem = await foodService.searchOrAddFood(foodName);
+      if (foodItem != null) {
+        final docSnapshot =
+            await foodService.getFoodItemDocSnapshot(foodItem.foodId);
+        setState(() {
+          searchedItem = foodItem;
+          selectedFoodItemDoc = docSnapshot;
+          errorMsg = null;
+          isLoading = false;
+        });
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add food item')),
-      );
+      setState(() {
+        errorMsg = 'Failed to get data: $e';
+        searchedItem = null;
+        selectedFoodItemDoc = null;
+        isLoading = false;
+      });
     }
   }
 
   String nutrientsToText(Map<String, dynamic>? nutrients) {
     if (nutrients == null) {
-      return 'Nutrient information not available';
+      return ''; // or any default value
     }
 
     return nutrients.entries
@@ -52,34 +94,14 @@ class SearchFoodState extends State<SearchFood> {
         .join('\n');
   }
 
-  Future<void> handleSearch() async {
-    final foodName = searchController.text;
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      final result = await foodService.searchOrAddFood(foodName);
-      if (result != null) {
-        setState(() {
-          searchedItem = result;
-          errorMsg = null;
-          isLoading = false;
-        });
-      }
-    } catch (e) {
-      setState(() {
-        errorMsg = 'Failed to get data';
-        searchedItem = null;
-        isLoading = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Search Food"),
+        title: Text(
+          "Search Food for Consumption",
+          style: Theme.of(context).appBarTheme.titleTextStyle,
+        ),
         centerTitle: true,
       ),
       body: Padding(
@@ -95,10 +117,14 @@ class SearchFoodState extends State<SearchFood> {
                   ),
                   onFieldSubmitted: (value) async {
                     try {
-                      final result = await foodService.searchOrAddFood(value);
-                      if (result != null) {
+                      final foodItem = await foodService.searchOrAddFood(value);
+                      if (foodItem != null) {
+                        final docSnapshot = await foodService
+                            .getFoodItemDocSnapshot(foodItem.foodId);
                         setState(() {
-                          searchedItem = result;
+                          searchedItem = foodItem;
+                          selectedFoodItemDoc =
+                              docSnapshot; // Update the selectedFoodItemDoc with the DocumentSnapshot
                           errorMsg = null;
                         });
                       }
@@ -106,6 +132,8 @@ class SearchFoodState extends State<SearchFood> {
                       setState(() {
                         errorMsg = 'Failed to fetch food data';
                         searchedItem = null;
+                        selectedFoodItemDoc =
+                            null; // Clear the selectedFoodItemDoc as well
                       });
                     }
                   },
@@ -118,9 +146,9 @@ class SearchFoodState extends State<SearchFood> {
                       children: [
                         const TextSpan(text: 'Food Name: '),
                         TextSpan(
-                            text: searchedItem!.label,
-                            style:
-                                const TextStyle(fontWeight: FontWeight.bold)),
+                          text: searchedItem!.label,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ],
                     ),
                   ),
@@ -139,17 +167,18 @@ class SearchFoodState extends State<SearchFood> {
                         ),
                       Expanded(
                         child: Text(
-                            '${searchedItem!.label} Nutrients:\n${nutrientsToText(searchedItem!.nutrients)}'),
+                          '${searchedItem!.label} Nutrients:\n${nutrientsToText(searchedItem!.nutrients)}',
+                        ),
                       ),
                     ],
                   ),
                   ElevatedButton(
                     onPressed: () {
                       if (searchedItem != null) {
-                        addToUserDatabase(searchedItem!);
+                        addToConsumption();
                       }
                     },
-                    child: Text('Add Item'),
+                    child: Text('Add Item to Consumption'),
                   ),
                 ],
                 if (errorMsg != null)
@@ -158,9 +187,10 @@ class SearchFoodState extends State<SearchFood> {
             ),
             if (isLoading)
               const Center(
-                  child: CircularProgressIndicator(
-                color: Colors.blue,
-              )),
+                child: CircularProgressIndicator(
+                  color: Colors.blue,
+                ),
+              ),
           ],
         ),
       ),

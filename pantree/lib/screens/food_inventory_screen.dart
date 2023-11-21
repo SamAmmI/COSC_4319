@@ -6,7 +6,7 @@ import 'package:pantree/screens/search_food.dart';
 import 'package:pantree/components/food_image.dart';
 import 'package:pantree/services/food_manager.dart';
 import 'package:pantree/services/foodService.dart';
-import 'package:pantree/auth/auth.dart'; // Import FoodService
+import 'package:pantree/auth/auth.dart';
 import 'package:pantree/components/settings_drawer.dart';
 
 class FoodInventoryScreen extends StatefulWidget {
@@ -30,13 +30,13 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
   List<FoodItem> _userFoodItems = [];
 
   late FoodManagement _foodManagement;
-  late FoodService _foodService; // Initialize FoodService
+  late FoodService _foodService;
 
   @override
   void initState() {
     super.initState();
     _getUser();
-    _foodService = FoodService(); // Initialize FoodService
+    _foodService = FoodService();
   }
 
   Future<void> _getUser() async {
@@ -50,13 +50,11 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
   Future<void> _getUserFoodItems() async {
     List<FoodItem> userFoodItems = await _foodManagement.getUserFoodItems();
 
-    // Fetch additional information for each food item from the API
     for (var foodItem in userFoodItems) {
       var additionalInfo =
           await _foodService.fetchAdditionalInfo(foodItem.foodId);
       if (additionalInfo != null) {
-        foodItem
-            .updateNutrientDetails(additionalInfo); // Update nutrient details
+        foodItem.updateNutrientDetails(additionalInfo);
       }
     }
 
@@ -65,8 +63,22 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
     });
   }
 
+  Map<String, List<FoodItem>> groupItemsByDate(List<FoodItem> items) {
+    Map<String, List<FoodItem>> groupedItems = {};
+
+    for (var item in items) {
+      final dateKey = item.dateTime?.toLocal().toString().split(' ')[0];
+      groupedItems.putIfAbsent(dateKey!, () => []);
+      groupedItems[dateKey]!.add(item);
+    }
+
+    return groupedItems;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final groupedItems = groupItemsByDate(_userFoodItems);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -81,90 +93,108 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
         },
       ),
       body: ListView.builder(
-        itemCount: _userFoodItems.length,
+        itemCount: groupedItems.length,
         itemBuilder: (context, index) {
-          var foodItem = _userFoodItems[index];
-          return ListTile(
-            leading: FoodImage(
-              foodId: foodItem.foodId,
-              size: 56.0,
-            ),
-            title: Text(
-              foodItem.label,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            subtitle: RichText(
-              text: TextSpan(
-                style: Theme.of(context).textTheme.bodySmall,
-                children: [
-                  TextSpan(
-                    text:
-                        'Proteins: ${foodItem.getNutrientDetails("PROCNT")}g, ',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  TextSpan(
-                    text:
-                        'Carbs: ${foodItem.getNutrientDetails("CHOCDF.net")}g, ',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  TextSpan(
-                    text: 'Fats: ${foodItem.getNutrientDetails("FAT")}g\n',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
+          final dateKey = groupedItems.keys.elementAt(index);
+          final foodItems = groupedItems[dateKey]!;
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  dateKey,
+                  style: Theme.of(context).textTheme.subtitle1,
+                ),
               ),
-            ),
-            subtitleTextStyle: Theme.of(context).textTheme.bodySmall,
-            trailing: PopupMenuButton<String>(
-              icon: Icon(Icons.more_vert),
-              onSelected: (String choice) {
-                if (choice == 'edit') {
-                  _editNutrientInfo(foodItem);
-                } else if (choice == 'delete') {
-                  _deleteFoodItem(foodItem);
-                }
-              },
-              itemBuilder: (BuildContext context) {
-                return <PopupMenuEntry<String>>[
-                  const PopupMenuItem<String>(
-                    value: 'edit',
-                    child: ListTile(
-                      leading: Icon(Icons.edit),
-                      title: Text('Edit'),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: ClampingScrollPhysics(),
+                itemCount: foodItems.length,
+                itemBuilder: (context, index) {
+                  var foodItem = foodItems[index];
+                  return ListTile(
+                    leading: FoodImage(
+                      foodId: foodItem.foodId,
+                      size: 56.0,
                     ),
-                  ),
-                  const PopupMenuItem<String>(
-                    value: 'delete',
-                    child: ListTile(
-                      leading: Icon(Icons.delete),
-                      title: Text('Delete'),
+                    title: Text(
+                      foodItem.label,
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
-                  ),
-                  // Add more options if needed
-                ];
-              },
-            ),
+                    subtitle: RichText(
+                      text: TextSpan(
+                        style: Theme.of(context).textTheme.bodySmall,
+                        children: [
+                          TextSpan(
+                            text:
+                                'Proteins: ${foodItem.getNutrientDetails("PROCNT")}g, ',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          TextSpan(
+                            text:
+                                'Carbs: ${foodItem.getNutrientDetails("CHOCDF.net")}g, ',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          TextSpan(
+                            text:
+                                'Fats: ${foodItem.getNutrientDetails("FAT")}g\n',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    subtitleTextStyle: Theme.of(context).textTheme.bodySmall,
+                    trailing: PopupMenuButton<String>(
+                      icon: Icon(Icons.more_vert),
+                      onSelected: (String choice) {
+                        if (choice == 'edit') {
+                          _editNutrientInfo(foodItem);
+                        } else if (choice == 'delete') {
+                          _deleteFoodItem(foodItem);
+                        }
+                      },
+                      itemBuilder: (BuildContext context) {
+                        return <PopupMenuEntry<String>>[
+                          const PopupMenuItem<String>(
+                            value: 'edit',
+                            child: ListTile(
+                              leading: Icon(Icons.edit),
+                              title: Text('Edit'),
+                            ),
+                          ),
+                          const PopupMenuItem<String>(
+                            value: 'delete',
+                            child: ListTile(
+                              leading: Icon(Icons.delete),
+                              title: Text('Delete'),
+                            ),
+                          ),
+                        ];
+                      },
+                    ),
+                  );
+                },
+              ),
+            ],
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // Wait for the SearchFood screen to return a result
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => SearchFood(
                 userId: _userId,
                 onItemAdded: () {
-                  // Callback function to refresh the food items after adding
                   _getUserFoodItems();
                 },
               ),
             ),
           );
 
-          // Handle the result if needed
-          // For example, you can check if the result is not null and take action
           if (result != null) {
             // Do something with the result
           }
@@ -196,7 +226,7 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
   void _deleteFoodItem(FoodItem foodItem) async {
     try {
       // Delete the food item from Firebase
-      await FoodService().deleteUserFoodItem(foodItem, _userId as String);
+      await FoodService().deleteUserFoodItem(foodItem, _userId);
 
       // Notify parent screen about the update
       _getUserFoodItems();
@@ -230,9 +260,9 @@ class _EditNutrientScreenState extends State<EditNutrientScreen> {
   void initState() {
     super.initState();
     // Initialize controllers with existing values
-    proteinController.text = widget.foodItem.nutrients['PROCNT'].toString();
-    carbsController.text = widget.foodItem.nutrients['CHOCDF'].toString();
-    fatsController.text = widget.foodItem.nutrients['FAT'].toString();
+    proteinController.text = widget.foodItem.nutrients!['PROCNT'].toString();
+    carbsController.text = widget.foodItem.nutrients!['CHOCDF'].toString();
+    fatsController.text = widget.foodItem.nutrients!['FAT'].toString();
   }
 
   @override
@@ -278,11 +308,11 @@ class _EditNutrientScreenState extends State<EditNutrientScreen> {
 
   void _updateNutrients() async {
     // Update the nutrient values
-    widget.foodItem.nutrients['PROCNT'] =
+    widget.foodItem.nutrients?['PROCNT'] =
         double.tryParse(proteinController.text) ?? 0.0;
-    widget.foodItem.nutrients['CHOCDF'] =
+    widget.foodItem.nutrients?['CHOCDF'] =
         double.tryParse(carbsController.text) ?? 0.0;
-    widget.foodItem.nutrients['FAT'] =
+    widget.foodItem.nutrients?['FAT'] =
         double.tryParse(fatsController.text) ?? 0.0;
 
     try {

@@ -3,27 +3,59 @@
   retrival of data such as nutrients, catergory search,  image search
   very basic structure right now flut
 */
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class FoodItem {
-  final String foodId;
-  final String label;
-  final String knownAs;
+  String foodId;
+  String label;
+  String? knownAs;
+  Map<String, dynamic>? nutrients;
+  String? category;
+  String? categoryLabel;
+  String? image;
+  DateTime? dateTime;
+  double? protein; // protein property
+  double? carbs; // carbs property
+  double? fat; // fat property
 
-  final Map<String, dynamic> nutrients;
-  final String category;
-  final String categoryLabel;
-  final String image;
+  FoodItem({
+    required this.foodId,
+    required this.label,
+    this.knownAs,
+    this.nutrients,
+    this.category,
+    this.categoryLabel,
+    this.image,
+    this.dateTime,
+  });
 
-  // constructor of the class with the given fields
-  FoodItem(
-      {required this.foodId,
-      required this.label,
-      required this.knownAs,
-      required this.nutrients,
-      required this.category,
-      required this.categoryLabel,
-      required this.image});
+  FoodItem.fromFirestore(Map<String, dynamic> data)
+      : foodId = data['foodId'] ?? '',
+        label = data['label'] ?? '',
+        image = data['image'] ?? '',
+        protein =
+            data['protein']?.toDouble(), // Populate protein from Firestore data
+        carbs = data['carbs']?.toDouble(), // Populate carbs from Firestore data
+        fat = data['fat']?.toDouble(); // Populate fat from Firestore data
 
-  // will store this object to a map
+  // Add a factory constructor to create a FoodItem instance from a map
+  factory FoodItem.fromMap(Map<String, dynamic> map) {
+    return FoodItem(
+      foodId: map['foodId'] ?? '',
+      label: map['label'] ?? '',
+      knownAs: map['knownAs'],
+      nutrients: map['nutrients'],
+      category: map['category'],
+      categoryLabel: map['categoryLabel'],
+      image: map['image'],
+      dateTime: map['dateTime'] != null
+          ? (map['dateTime'] as Timestamp)
+              .toDate() // Convert Timestamp to DateTime
+          : null,
+    );
+  }
+
+  // Add a method to convert a FoodItem instance to a map
   Map<String, dynamic> toMap() {
     return {
       'foodId': foodId,
@@ -32,66 +64,24 @@ class FoodItem {
       'nutrients': nutrients,
       'category': category,
       'categoryLabel': categoryLabel,
-      'image': image
+      'image': image,
+      'dateTime': dateTime != null ? Timestamp.fromDate(dateTime!) : null,
     };
   }
 
-  static FoodItem fromMap(Map<String, dynamic> map) {
-    return FoodItem(
-      foodId: map['foodId'],
-      label: map['label'],
-      knownAs: map['knownAs'],
-      nutrients: map['nutrients'],
-      category: map['category'],
-      categoryLabel: map['categoryLabel'],
-      image: map['image'],
-    );
+  void updateNutrientDetails(Map<String, dynamic> additionalInfo) {
+    // Implement the logic to update the nutrient details based on additionalInfo
+    // For example:
+    // nutrientDetails['PROCNT'] = additionalInfo['protein'];
+    // nutrientDetails['CHOCDF.net'] = additionalInfo['carbs'];
+    // nutrientDetails['FAT'] = additionalInfo['fat'];
   }
 
-  // api returns nutrient details in similar format implemented this to translate when needed
+  // Add the missing method
   String getNutrientDetails(String nutrientKey) {
-    Map<String, String> nutrientNames = {
-      "name": "Name",
-      "calories": "Calories",
-      "category": "Category",
-      "CHOCDF": "Carbohydrate (g)",
-      "CHOCDF.net": "Carbohydrates(net) g",
-      "CHOLE": "Cholesterol (mg)",
-      "ENERC_KCAL": "Energy",
-      "FAMS": "Monosaturated (g)",
-      "FAPU": "Polyunsaturated (g)",
-      "FASAT": "Total Saturated (g)",
-      "FAT": "Fat (g)",
-      "FATRN": "Total Trans Fatty Acids (g)",
-      "FE": "Iron mg",
-      "FIBTG": "Total Dietary Fiber (g)",
-      "FOLAC": "Folic Acid",
-      "FOLDFE": "Foloate",
-      "FOLFD": "Folate(food)",
-      "K": "Potassium (mg)",
-      "MG": "Magnesium (mg)",
-      "NA": "Sodium (mg)",
-      "NIA": "Niacin (mg)",
-      "P": "Phosphorus (mg)",
-      "PROCNT": "Protein (g)",
-      "RIBF": "Riboflavin (g)",
-      "SUGAR": "Sugar h",
-      "SUGAR.added": "Sugars Added (g)",
-      "Sugar.alcohol": "Surgar Alchohols (g)",
-      "THIA": "Thiamin (mg)",
-      "TOCPHA": "Vitamin E",
-      "VITA_RAE": "Vitamin A RAE",
-      "VITB12": "Vitamin B12",
-      "VITB6A": "Vitamin B6",
-      "VITC": "Vitamin C",
-      "VITD": "Vitamin D",
-      "VITK1": "Vitamin k",
-      "WATER": "Water (g)",
-      "ZN": "Zinc (mg)",
-    };
-
-    return nutrientNames[nutrientKey] ?? 'Unknown';
+    // Implement the logic to get nutrient details based on the nutrientKey
+    // For example:
+    // return '${nutrientDetails[nutrientKey]}g';
+    return ''; // Replace this with the actual implementation
   }
-
-  void updateNutrientDetails(additionalInfo) {}
 }

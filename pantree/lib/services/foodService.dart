@@ -14,12 +14,18 @@ class FoodService {
 
   Future<FoodItem> addFoodItemToUserDatabase(
       String userId, FoodItem food) async {
+    final now = DateTime.now();
+
     await FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
         .collection('foodItems')
         .doc(food.foodId)
-        .set(food.toMap());
+        .set({
+      ...food.toMap(),
+      'dateTime': now, // Add the date property
+    });
+
     return food;
   }
 
@@ -38,6 +44,16 @@ class FoodService {
         .doc(userId)
         .collection('foodItems')
         .doc(foodItem.foodId)
+        .delete();
+  }
+
+  // deleting food item from user utilzing the foodId directly for the consumption
+  Future<void> consumedFoodItem(String foodId, String userId) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('foodItems')
+        .doc(foodId)
         .delete();
   }
 
@@ -72,6 +88,7 @@ class FoodService {
           category: foodData['category'],
           categoryLabel: foodData['categoryLabel'],
           image: foodData['image'],
+          dateTime: null,
         );
 
         await addFoodItemToFirebase(food);
@@ -90,6 +107,19 @@ class FoodService {
     if (doc.data() != null) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       return data['image'];
+    }
+    return null;
+  }
+
+  Future<DocumentSnapshot?> getFoodItemDocSnapshot(String foodId) async {
+    try {
+      final QuerySnapshot snapshot =
+          await foodItems.where('foodId', isEqualTo: foodId).get();
+      if (snapshot.docs.isNotEmpty) {
+        return snapshot.docs.first;
+      }
+    } catch (e) {
+      print('Error fetching document snapshot: $e');
     }
     return null;
   }
