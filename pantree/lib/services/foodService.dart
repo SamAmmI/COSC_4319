@@ -12,20 +12,35 @@ class FoodService {
     return food;
   }
 
+  // ONCE CONFIRMED FOOD ITEM IT FOUND ADD TO THE DATABASE
   Future<FoodItem> addFoodItemToUserDatabase(
-      String userId, FoodItem food) async {
+      String userId, FoodItem food, double quantity) async {
     final now = DateTime.now();
-
-    await FirebaseFirestore.instance
+    final foodItemRef = FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
         .collection('foodItems')
-        .doc(food.foodId)
-        .set({
-      ...food.toMap(),
-      'dateTime': now, // Add the date property
-    });
+        .doc(food.foodId);
 
+    final doc = await foodItemRef.get();
+
+    // foodItem is in current Invenetory update the quantity, if not add food item with quantity amount
+    if (doc.exists) {
+      double currentQuantity = doc.data()?['quantity']?.toDouble() ?? 0;
+      double updatedQuantity = currentQuantity + quantity;
+      await foodItemRef.update({'quantity': updatedQuantity});
+    } else {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('foodItems')
+          .doc(food.foodId)
+          .set({
+        ...food.toMap(),
+        'dateTime': now,
+        'quantity': quantity,
+      });
+    }
     return food;
   }
 
@@ -48,13 +63,25 @@ class FoodService {
   }
 
   // deleting food item from user utilzing the foodId directly for the consumption
-  Future<void> consumedFoodItem(String foodId, String userId) async {
-    await FirebaseFirestore.instance
-        .collection('users')
+  Future<void> consumedFoodItem(
+      String foodId, String userId, double quantity) async {
+    final foodItemRef = FirebaseFirestore.instance
+        .collection('user')
         .doc(userId)
         .collection('foodItems')
-        .doc(foodId)
-        .delete();
+        .doc(foodId);
+
+    final doc = await foodItemRef.get();
+    if (doc.exists) {
+      double currentQuantity = doc.data()?['quantity']?.toDouble ?? 0;
+      double updatedQuantity = currentQuantity - quantity;
+
+      if (updatedQuantity <= 0) {
+        await foodItemRef.delete();
+      } else {
+        await foodItemRef.update({'quantity': updatedQuantity});
+      }
+    }
   }
 
   Future<FoodItem?> searchOrAddFood(String foodName) async {
@@ -81,15 +108,16 @@ class FoodService {
         final foodData = parsedResponse['parsed'][0]['food'];
 
         final food = FoodItem(
-          foodId: foodData['foodId'],
-          label: foodData['label'],
-          knownAs: foodData['knownAs'],
-          nutrients: foodData['nutrients'],
-          category: foodData['category'],
-          categoryLabel: foodData['categoryLabel'],
-          image: foodData['image'],
-          dateTime: null,
-        );
+            foodId: foodData['foodId'],
+            label: foodData['label'],
+            knownAs: foodData['knownAs'],
+            nutrients: foodData['nutrients'],
+            category: foodData['category'],
+            categoryLabel: foodData['categoryLabel'],
+            image: foodData['image'],
+            dateTime: null,
+            quantity: null,
+            consumptionCount: null);
 
         await addFoodItemToFirebase(food);
 

@@ -17,17 +17,20 @@ class FoodItem {
   double? protein; // protein property
   double? carbs; // carbs property
   double? fat; // fat property
+  double? quantity;
+  double? consumptionCount;
 
-  FoodItem({
-    required this.foodId,
-    required this.label,
-    this.knownAs,
-    this.nutrients,
-    this.category,
-    this.categoryLabel,
-    this.image,
-    this.dateTime,
-  });
+  FoodItem(
+      {required this.foodId,
+      required this.label,
+      this.knownAs,
+      this.nutrients,
+      this.category,
+      this.categoryLabel,
+      this.image,
+      this.dateTime,
+      this.quantity,
+      this.consumptionCount});
 
   FoodItem.fromFirestore(Map<String, dynamic> data)
       : foodId = data['foodId'] ?? '',
@@ -52,6 +55,8 @@ class FoodItem {
           ? (map['dateTime'] as Timestamp)
               .toDate() // Convert Timestamp to DateTime
           : null,
+      quantity: map['quantity']?.toDouble(), // quantity
+      consumptionCount: map['consumptionCount']?.toDouble(), //consumptionCount
     );
   }
 
@@ -66,6 +71,8 @@ class FoodItem {
       'categoryLabel': categoryLabel,
       'image': image,
       'dateTime': dateTime != null ? Timestamp.fromDate(dateTime!) : null,
+      'quantity': quantity, // quantity
+      'consumptionCount': consumptionCount, // consumptionCount
     };
   }
 
@@ -82,6 +89,46 @@ class FoodItem {
     // Implement the logic to get nutrient details based on the nutrientKey
     // For example:
     // return '${nutrientDetails[nutrientKey]}g';
-    return ''; // Replace this with the actual implementation
+    Map<String, String> nutrientNames = {
+      "name": "Name",
+      "calories": "Calories",
+      "category": "Category",
+      "CHOCDF": "Carbohydrate (g)",
+      "CHOCDF.net": "Carbohydrates(net) g",
+      "CHOLE": "Cholesterol (mg)",
+      "ENERC_KCAL": "Energy",
+      "FAMS": "Monosaturated (g)",
+      "FAPU": "Polyunsaturated (g)",
+      "FASAT": "Total Saturated (g)",
+      "FAT": "Fat (g)",
+      "FATRN": "Total Trans Fatty Acids (g)",
+      "FE": "Iron mg",
+      "FIBTG": "Total Dietary Fiber (g)",
+      "FOLAC": "Folic Acid",
+      "FOLDFE": "Foloate",
+      "FOLFD": "Folate(food)",
+      "K": "Potassium (mg)",
+      "MG": "Magnesium (mg)",
+      "NA": "Sodium (mg)",
+      "NIA": "Niacin (mg)",
+      "P": "Phosphorus (mg)",
+      "PROCNT": "Protein (g)",
+      "RIBF": "Riboflavin (g)",
+      "SUGAR": "Sugar h",
+      "SUGAR.added": "Sugars Added (g)",
+      "Sugar.alcohol": "Surgar Alchohols (g)",
+      "THIA": "Thiamin (mg)",
+      "TOCPHA": "Vitamin E",
+      "VITA_RAE": "Vitamin A RAE",
+      "VITB12": "Vitamin B12",
+      "VITB6A": "Vitamin B6",
+      "VITC": "Vitamin C",
+      "VITD": "Vitamin D",
+      "VITK1": "Vitamin k",
+      "WATER": "Water (g)",
+      "ZN": "Zinc (mg)",
+    };
+
+    return nutrientNames[nutrientKey] ?? 'Unknown';
   }
 }
