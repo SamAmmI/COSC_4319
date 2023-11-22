@@ -25,7 +25,7 @@ class SearchFoodState extends State<SearchFood> {
   void addToUserDatabase(FoodItem foodItem) async {
     try {
       String userId = FirebaseAuth.instance.currentUser!.uid;
-      await foodService.addFoodItemToUserDatabase(userId, foodItem);
+      await foodService.addFoodItemToUserDatabase(userId, foodItem, 1);
 
       // Call the callback function to notify the FoodInventoryScreen
       if (widget.onItemAdded != null) {

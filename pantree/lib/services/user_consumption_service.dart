@@ -84,7 +84,7 @@ class ConsumptionService {
     // If the item is from inventory, reduce its quantity
     if (fromInventory) {
       for (int i = 0; i < quantity; i++) {
-        await foodService.consumedFoodItem(foodItemDoc.id, userId);
+        await foodService.consumedFoodItem(foodItemDoc.id, userId, 1);
       }
     }
   }
@@ -149,7 +149,7 @@ class ConsumptionService {
       // Loop to add the item back to inventory based on quantity
       for (int i = 0; i < quantity; i++) {
         await foodService.addFoodItemToUserDatabase(
-            userId, foodService.searchOrAddFood(foodId) as FoodItem);
+            userId, foodService.searchOrAddFood(foodId) as FoodItem, 1);
       }
     }
   }
