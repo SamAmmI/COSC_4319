@@ -159,7 +159,7 @@ class _settings_screenState extends State<settings_screen> {
                 title: "General",
                 children: [
                   ListTiles(
-                    title: "User Profile",
+                    title: "My Profile",
                     icon: Icons.person_outline_rounded,
                     onTap: () {
                       Navigator.push(

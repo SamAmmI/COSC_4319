@@ -27,23 +27,38 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 // Display user avatar
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 60,
                   backgroundImage:
                       AssetImage(''), // Add your image asset path here
                 ),
-                const SizedBox(height: 20),
-                // Display user email
-                Text(
-                  user != null ? user.email ?? 'No Email' : 'No User',
-                  style: const TextStyle(fontSize: 18, color: Colors.grey),
+                const SizedBox(width: 20),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Display user name and email
+                    Text(
+                      user != null ? '${user.displayName ?? ''}' : 'No User',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 5), // Adjust the spacing as needed
+                    Text(
+                      user != null ? user.email ?? 'No Email' : 'No User',
+                      style: const TextStyle(fontSize: 18, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 20),
+                    // Display user profile details
+                    _buildUserProfileDetails(),
+                  ],
                 ),
-                const SizedBox(height: 20),
-                // Display user profile details
-                _buildUserProfileDetails(),
               ],
             ),
           ),
@@ -58,9 +73,15 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     if (userProfile != null) {
       return Column(
         children: [
-          // Display user details (name, height, weight, etc.)
+          // Display user details (height, weight, etc.)
           // Customize this part based on your UserProfile model attributes
-          Text('Name: ${userProfile.firstName} ${userProfile.lastName}'),
+          Text(
+            '${userProfile.firstName} ${userProfile.lastName}',
+            style: const TextStyle(
+              fontSize: 20, // Adjust the font size as needed
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           Text('Height: ${userProfile.height} m'),
           Text('Weight: ${userProfile.weight} kg'),
           // Add more attributes as needed

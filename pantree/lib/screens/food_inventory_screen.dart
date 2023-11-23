@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:pantree/components/drawer.dart';
 import 'package:pantree/models/food_item.dart';
 import 'package:pantree/screens/search_food.dart';
 import 'package:pantree/components/food_image.dart';

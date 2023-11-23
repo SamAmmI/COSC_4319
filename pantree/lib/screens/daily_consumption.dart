@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pantree/components/button.dart';
-import 'package:pantree/components/drawer.dart';
 import 'package:pantree/screens/add_food_screen.dart';
 import 'package:pantree/screens/search_food.dart';
 import 'package:pie_chart/pie_chart.dart';

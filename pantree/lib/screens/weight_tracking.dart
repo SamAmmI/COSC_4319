@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pantree/components/button.dart';
-import 'package:pantree/components/drawer.dart';
 import 'package:pantree/components/settings_drawer.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 

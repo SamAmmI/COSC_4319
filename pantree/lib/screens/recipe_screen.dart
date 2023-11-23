@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:pantree/components/drawer.dart';
 import 'package:pantree/components/recipe_view.dart';
 import 'package:pantree/components/settings_drawer.dart';
 import 'package:pantree/models/recipe_models.dart';
