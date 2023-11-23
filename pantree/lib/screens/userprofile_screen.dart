@@ -50,11 +50,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 5), // Adjust the spacing as needed
-                    Text(
-                      user != null ? user.email ?? 'No Email' : 'No User',
-                      style: const TextStyle(fontSize: 18, color: Colors.grey),
-                    ),
-                    const SizedBox(height: 20),
                     // Display user profile details
                     _buildUserProfileDetails(),
                   ],
@@ -69,11 +64,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   Widget _buildUserProfileDetails() {
     UserProfile? userProfile = _userManager.getCachedUser();
+    User? user = FirebaseAuth.instance.currentUser;
 
-    if (userProfile != null) {
+    if (userProfile != null && user != null) {
       return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Display user details (height, weight, etc.)
+          // Display user details (name, height, weight, etc.)
           // Customize this part based on your UserProfile model attributes
           Text(
             '${userProfile.firstName} ${userProfile.lastName}',
@@ -82,6 +79,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
+          Text(
+            '${user.email ?? 'No Email'}',
+            style: const TextStyle(fontSize: 18, color: Colors.grey),
+          ), // Display user email
           Text('Height: ${userProfile.height} m'),
           Text('Weight: ${userProfile.weight} kg'),
           // Add more attributes as needed
