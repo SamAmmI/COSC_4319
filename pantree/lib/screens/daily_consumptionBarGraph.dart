@@ -1,21 +1,101 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:pantree/models/local_user_manager.dart';
+import 'package:pantree/models/user_profile.dart';
+import 'package:pantree/services/user_consumption_service.dart';
+import 'package:pantree/models/user_consumption_model.dart';
 
-/*
-this class will display a visual representation of the user's consumption,
-the user will also be able to navigate to a more specific page
-*/
 class DailyConsumptionScreenGraph extends StatefulWidget {
   const DailyConsumptionScreenGraph({Key? key}) : super(key: key);
 
   @override
-  State<DailyConsumptionScreenGraph> createState() =>
+  _DailyConsumptionScreenGraphState createState() =>
       _DailyConsumptionScreenGraphState();
 }
 
 class _DailyConsumptionScreenGraphState
     extends State<DailyConsumptionScreenGraph> {
+  // attributes needed for this class
+  UserConsumption? currentConsumption;
+  UserProfile? userProfile;
+  double? userCalorieGoal;
+  double? userProteinGoal;
+  double? userCarbGoal;
+  double? userFatGoal;
+  List<NutrientBarData> nutrientDataList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCurrentConsumption();
+    fetchUserProfile();
+  }
+
+  // WHERE WE FETCH THE USER CURRENT CONSUMPTION
+  Future<void> fetchCurrentConsumption() async {
+    String userID = FirebaseAuth.instance.currentUser?.uid ?? '';
+    try {
+      DateTime currentDate = DateTime.now();
+      var consumptionData = await ConsumptionService.instance
+          .getUserConsumptionData(userID, currentDate);
+      print('Fetched Data: $consumptionData');
+      setState(() {
+        currentConsumption = consumptionData;
+      });
+    } catch (e) {
+      print('Error fetching consumption data: $e');
+    }
+  }
+
+  // WHERE WE FETCH THE PROFILE AND ATTRIBUTES
+  void fetchUserProfile() async {
+    final localUserManager = LocalUserManager();
+    userProfile = localUserManager.getCachedUser();
+
+    if (userProfile == null) {
+      String userID = FirebaseAuth.instance.currentUser?.uid ?? '';
+      await localUserManager.fetchAndUpdateUser(userID);
+      userProfile = localUserManager.getCachedUser();
+    }
+    if (userProfile != null) {
+      userCalorieGoal =
+          localUserManager.getUserAttribute('Calories') as double?;
+      userProteinGoal = localUserManager.getUserAttribute('Protein') as double?;
+      userCarbGoal = localUserManager.getUserAttribute('Carbs') as double?;
+      userFatGoal = localUserManager.getUserAttribute('Fat') as double?;
+    }
+    setState(() {});
+  }
+
+  List<NutrientBarData> generateNutrientData() {
+    List<NutrientBarData> dataList = [];
+
+    if (currentConsumption != null && userProfile != null) {
+      // Extract the nutrient values from currentConsumption and userProfile
+      double currentCalories = currentConsumption!.totalCalories;
+      double currentProteins = currentConsumption!.totalProteins;
+      double currentCarbs = currentConsumption!.totalCarbs;
+      double currentFats = currentConsumption!.totalFats;
+
+      double goalCalories = userCalorieGoal ?? 0;
+      double goalProteins = userProteinGoal ?? 0;
+      double goalCarbs = userCarbGoal ?? 0;
+      double goalFats = userFatGoal ?? 0;
+
+      // Create NutrientBarData instances for each nutrient
+      dataList.add(NutrientBarData('Calories', currentCalories, goalCalories));
+      dataList.add(NutrientBarData('Proteins', currentProteins, goalProteins));
+      dataList.add(NutrientBarData('Carbs', currentCarbs, goalCarbs));
+      dataList.add(NutrientBarData('Fats', currentFats, goalFats));
+    }
+
+    return dataList;
+  }
+
   @override
   Widget build(BuildContext context) {
+    nutrientDataList = generateNutrientData();
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -61,20 +141,25 @@ class _DailyConsumptionScreenGraphState
                       ],
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(6.0),
-                      child: Container(
-                        height: 270,
-                        width: 345,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.orange,
-                        ),
-                      ),
-                    ),
-
-                    // START here to add the bar chart
-
-                    // then start here to add the arrow to take you to the other page
+                        padding: const EdgeInsets.all(6.0),
+                        child: Container(
+                          height: 270,
+                          width: 345,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color:
+                                Theme.of(context).appBarTheme.backgroundColor ??
+                                    Colors.black ??
+                                    Colors.white,
+                          ),
+                          child: LayoutBuilder(
+                            builder: (BuildContext context,
+                                BoxConstraints constraints) {
+                              return NutrientBarChart(
+                                  dataList: nutrientDataList);
+                            }, // Removed Expanded),
+                          ),
+                        ))
                   ],
                 )),
 
@@ -99,13 +184,14 @@ class _DailyConsumptionScreenGraphState
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    buildNutrientCard('Calories', '2000 kcal'),
-                    buildNutrientCard('Proteins', '50 g'),
-                    buildNutrientCard('Carbs', '300 g'),
-                    buildNutrientCard('Fats', '70 g'),
-                    SizedBox(
-                      height: 40,
-                    )
+                    buildNutrientCard('Calories',
+                        '${currentConsumption?.totalCalories.toStringAsFixed(0)} kcal'),
+                    buildNutrientCard('Proteins',
+                        '${currentConsumption?.totalProteins.toStringAsFixed(0)} g'),
+                    buildNutrientCard('Carbs',
+                        '${currentConsumption?.totalCarbs.toStringAsFixed(0)} g'),
+                    buildNutrientCard('Fats',
+                        '${currentConsumption?.totalFats.toStringAsFixed(0)} g'),
                   ],
                 ),
               ],
@@ -116,52 +202,13 @@ class _DailyConsumptionScreenGraphState
     );
   }
 
-  Widget buildNutritionalSummary(BuildContext context) {
-    return Expanded(
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Theme.of(context)
-              .scaffoldBackgroundColor, // Use scaffold background color
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 4,
-              color: Color(0x33000000),
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Theme.of(context).appBarTheme.backgroundColor ??
-                    Colors.black ??
-                    Colors.white, // You can customize the color here
-                boxShadow: [
-                  BoxShadow(
-                    blurRadius: 3,
-                    color: Color(0x33000000),
-                    offset: Offset(0, 1),
-                  ),
-                ],
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
+// widget for each nutrient card such as calories, and others....
   Widget buildNutrientCard(String nutrient, String value) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
       child: Container(
-        width: double.infinity, // Extend the width to fit the container
-        height: 60, // Adjust height as needed
+        width: double.infinity,
+        height: 60,
         decoration: BoxDecoration(
           color: Theme.of(context).appBarTheme.backgroundColor ??
               Colors.black ??
@@ -193,6 +240,65 @@ class _DailyConsumptionScreenGraphState
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class NutrientBarData {
+  final String nutrient;
+  final double consumption;
+  final double goal;
+
+  NutrientBarData(this.nutrient, this.consumption, this.goal);
+}
+
+class NutrientBarChart extends StatefulWidget {
+  final List<NutrientBarData> dataList;
+
+  NutrientBarChart({Key? key, required this.dataList}) : super(key: key);
+
+  @override
+  _NutrientBarChartState createState() => _NutrientBarChartState();
+}
+
+class _NutrientBarChartState extends State<NutrientBarChart> {
+  @override
+  Widget build(BuildContext context) {
+    return BarChart(
+      BarChartData(
+        gridData: FlGridData(show: false),
+        titlesData: FlTitlesData(show: false),
+        borderData: FlBorderData(
+          show: true,
+          border: Border.all(
+            color: const Color(0xff37434d),
+            width: 1,
+          ),
+        ),
+        barGroups: widget.dataList
+            .asMap()
+            .map((index, data) {
+              return MapEntry(
+                  index,
+                  BarChartGroupData(
+                    x: index,
+                    barRods: [
+                      BarChartRodData(
+                        toY: data.consumption,
+                        color: Colors.blue,
+                        width: 16,
+                      ),
+                      BarChartRodData(
+                        toY: data.goal,
+                        color: Colors.green,
+                        width: 16,
+                      ),
+                    ],
+                  ));
+            })
+            .values
+            .toList(),
       ),
     );
   }

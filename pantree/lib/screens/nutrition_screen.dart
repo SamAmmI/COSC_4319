@@ -260,7 +260,7 @@ class _NutritionScreenState extends State<nutrition_screen> {
                     children: [
                       Expanded(
                         child: Container(
-                          height: 100,
+                          height: 120,
                           child: VerticalInfoCard(
                             title: 'Log Food',
                             subtitle: '',
@@ -286,7 +286,7 @@ class _NutritionScreenState extends State<nutrition_screen> {
                       // CARD 3 'NUTRITIONAL PREFERENCES BUTTON
                       Expanded(
                         child: Container(
-                          height: 100,
+                          height: 120,
                           child: VerticalInfoCard(
                             title: 'Nutritional \nPreferences',
                             subtitle: '',

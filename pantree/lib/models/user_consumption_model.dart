@@ -1,6 +1,5 @@
-// thought I wouldnt have to create a consumption model but for easier implementation
-// I had to create one, wasnt easy to just communicate with the server for specified details
 import 'package:pantree/models/food_item.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserConsumption {
   DateTime consumedAt;
@@ -21,9 +20,9 @@ class UserConsumption {
     this.totalFats = 0.0,
   });
 
+  // Calculate total nutrients from food items
   void calculateTotals() {
     totalCalories = totalProteins = totalCarbs = totalFats = 0.0;
-
     for (FoodItem item in foodItems) {
       totalCalories += (item.nutrients?['ENERC_KCAL'] as double? ?? 0.0);
       totalProteins += (item.nutrients?['PROCNT'] as double? ?? 0.0);
@@ -32,9 +31,10 @@ class UserConsumption {
     }
   }
 
+  // Convert the instance to a map
   Map<String, dynamic> toMap() {
     return {
-      'consumedAt': consumedAt,
+      'consumedAt': Timestamp.fromDate(consumedAt),
       'userId': userId,
       'foodItems': foodItems.map((item) => item.toMap()).toList(),
       'totalCalories': totalCalories,
@@ -45,18 +45,30 @@ class UserConsumption {
   }
 
   factory UserConsumption.fromMap(Map<String, dynamic> map) {
-    var foodItemsList = (map['foodItems'] as List)
-        .map((itemMap) => FoodItem.fromMap(itemMap))
-        .toList();
+    var foodItemsList = (map['foodItems'] as List?)
+            ?.map(
+                (itemMap) => FoodItem.fromMap(itemMap as Map<String, dynamic>))
+            .toList() ??
+        [];
+
+    // Check if 'consumedAt' is not null before casting
+    DateTime? consumedAtDate;
+    if (map['consumedAt'] != null) {
+      consumedAtDate = (map['consumedAt'] as Timestamp).toDate();
+    } else {
+      // Handle the case where 'consumedAt' is null
+      // For example, use the current date, or handle it according to your business logic
+      consumedAtDate = DateTime.now();
+    }
 
     return UserConsumption(
-      consumedAt: map['consumedAt'].toDate(),
-      userId: map['userId'],
+      consumedAt: consumedAtDate,
+      userId: map['userId'] ?? '',
       foodItems: foodItemsList,
-      totalCalories: map['totalCalories'] ?? 0.0,
-      totalProteins: map['totalProteins'] ?? 0.0,
-      totalCarbs: map['totalCarbs'] ?? 0.0,
-      totalFats: map['totalFats'] ?? 0.0,
+      totalCalories: map['totalCalories']?.toDouble() ?? 0.0,
+      totalProteins: map['totalProteins']?.toDouble() ?? 0.0,
+      totalCarbs: map['totalCarbs']?.toDouble() ?? 0.0,
+      totalFats: map['totalFats']?.toDouble() ?? 0.0,
     );
   }
 }

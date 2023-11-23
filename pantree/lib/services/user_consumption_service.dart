@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pantree/models/food_item.dart';
+import 'package:pantree/models/user_consumption_model.dart';
 import 'package:pantree/services/foodService.dart';
 
 class ConsumptionService {
@@ -61,8 +62,9 @@ class ConsumptionService {
       double totalCalories =
           dailyTotalsData?['totalCalories']?.toDouble() ?? 0.0;
       double totalCarbs = dailyTotalsData?['totalCarbs']?.toDouble() ?? 0.0;
-      double totalFat = dailyTotalsData?['totalFat']?.toDouble() ?? 0.0;
-      double totalProtein = dailyTotalsData?['totalProtein']?.toDouble() ?? 0.0;
+      double totalFat = dailyTotalsData?['totalFats']?.toDouble() ?? 0.0;
+      double totalProtein =
+          dailyTotalsData?['totalProteins']?.toDouble() ?? 0.0;
 
       totalCalories += (nutrients['ENERC_KCAL']?.toDouble() ?? 0) * quantity;
       totalCarbs += (nutrients['CHOCDF']?.toDouble() ?? 0) * quantity;
@@ -75,8 +77,8 @@ class ConsumptionService {
           {
             'totalCalories': totalCalories,
             'totalCarbs': totalCarbs,
-            'totalFat': totalFat,
-            'totalProtein': totalProtein,
+            'totalFats': totalFat,
+            'totalProteins': totalProtein,
           },
           SetOptions(merge: true));
     });
@@ -188,5 +190,57 @@ class ConsumptionService {
     }
 
     return weeklyData;
+  }
+
+  // METHOD TO FETCH USER CONSUMPTION DATA
+  Future<UserConsumption> getUserConsumptionData(
+      String userId, DateTime date) async {
+    String dateStr = "${date.year}-${date.month}-${date.day}";
+    DocumentSnapshot userConsumptionSnapshot = await userConsumption
+        .doc(userId)
+        .collection(dateStr)
+        .doc('dailyTotals')
+        .get();
+
+    if (!userConsumptionSnapshot.exists) {
+      // Handle the case where there is no consumption data for the given date
+      throw Exception('No consumption data available for the given date');
+    }
+
+    Map<String, dynamic> consumptionData =
+        userConsumptionSnapshot.data() as Map<String, dynamic>;
+    return UserConsumption.fromMap(consumptionData);
+  }
+
+  Future<List<FoodItem>> fetchConsumedFoodItems(
+      String userId, DateTime date) async {
+    String dateStr = "${date.year}-${date.month}-${date.day}";
+    CollectionReference consumptionCollection = _firestore
+        .collection('userConsumption')
+        .doc(userId)
+        .collection(dateStr);
+
+    QuerySnapshot snapshot = await consumptionCollection.get();
+
+    // Create a list to store the consumed food items
+    List<FoodItem> consumedFoodItems = [];
+
+    // Iterate through the documents and fetch food item data
+    snapshot.docs.forEach((doc) async {
+      String foodItemId = doc['foodItemId'];
+
+      // Retrieve the food details from Firestore using foodItemId
+      DocumentSnapshot foodItemSnapshot =
+          await _firestore.collection('foodItems').doc(foodItemId).get();
+      Map<String, dynamic>? foodItemData =
+          foodItemSnapshot.data() as Map<String, dynamic>?;
+
+      if (foodItemData != null) {
+        FoodItem foodItem = FoodItem.fromMap(foodItemData);
+        consumedFoodItems.add(foodItem);
+      }
+    });
+
+    return consumedFoodItems;
   }
 }
