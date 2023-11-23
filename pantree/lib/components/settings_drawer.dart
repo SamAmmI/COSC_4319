@@ -22,15 +22,6 @@ class _Settings_DrawerState extends State<Settings_Drawer> {
   final GlobalKey<DrawerControllerState> _drawerKey =
       GlobalKey<DrawerControllerState>();
 
-  void settingsScreen() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const settings_screen(),
-      ),
-    );
-  }
-
   void signOut() {
     FirebaseAuth.instance.signOut();
   }
@@ -51,15 +42,7 @@ class _Settings_DrawerState extends State<Settings_Drawer> {
         children: [
           Column(
             children: [
-              SizedBox(height: 20), // Add padding at the top
-              Padding(
-                padding: const EdgeInsets.only(top: 25),
-                child: MyListTile(
-                  icon: Icons.settings,
-                  text: "Settings",
-                  onTap: settingsScreen,
-                ),
-              ),
+              SizedBox(height: 50), // Add padding at the top
               Padding(
                 padding: const EdgeInsets.only(top: 1),
                 child: MyListTile(

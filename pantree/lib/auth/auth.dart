@@ -52,6 +52,7 @@ class _AuthPageState extends State<AuthPage> {
       recipe_screen(),
       nutrition_screen(),
       WeightTrack(),
+      settings_screen()
     ];
   }
 
@@ -75,6 +76,11 @@ class _AuthPageState extends State<AuthPage> {
       PersistentBottomNavBarItem(
           icon: Icon(Icons.line_axis),
           title: "Weight Tracking",
+          activeColorPrimary: Theme.of(context).colorScheme.primary,
+          inactiveColorPrimary: Theme.of(context).colorScheme.secondary),
+      PersistentBottomNavBarItem(
+          icon: Icon(Icons.settings),
+          title: "Settings",
           activeColorPrimary: Theme.of(context).colorScheme.primary,
           inactiveColorPrimary: Theme.of(context).colorScheme.secondary),
     ];

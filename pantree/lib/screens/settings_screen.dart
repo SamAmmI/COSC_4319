@@ -124,6 +124,7 @@ import 'package:pantree/screens/about_screen.dart';
 import 'package:pantree/screens/userprofile_screen.dart';
 import 'package:pantree/themes/themes.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class settings_screen extends StatefulWidget {
   const settings_screen({Key? key}) : super(key: key);
@@ -133,6 +134,10 @@ class settings_screen extends StatefulWidget {
 }
 
 class _settings_screenState extends State<settings_screen> {
+  void signOut() {
+    FirebaseAuth.instance.signOut();
+  }
+
   @override
   Widget build(BuildContext context) {
     var themeNotifier = Provider.of<ThemeNotifier>(context);
@@ -144,12 +149,6 @@ class _settings_screenState extends State<settings_screen> {
           style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
       ),
       body: Center(
         child: Container(
@@ -197,6 +196,8 @@ class _settings_screenState extends State<settings_screen> {
                       );
                     },
                   ),
+                  ListTiles(
+                      title: "Logout", icon: Icons.logout, onTap: signOut),
                 ],
               ),
             ],
