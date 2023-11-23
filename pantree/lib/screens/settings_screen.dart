@@ -125,6 +125,7 @@ import 'package:pantree/screens/userprofile_screen.dart';
 import 'package:pantree/themes/themes.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pantree/components/settings_drawer.dart';
 
 class settings_screen extends StatefulWidget {
   const settings_screen({Key? key}) : super(key: key);
@@ -149,6 +150,11 @@ class _settings_screenState extends State<settings_screen> {
           style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
         centerTitle: true,
+      ),
+      drawer: Settings_Drawer(
+        onSettingsTap: () {
+          // Navigate to settings screen (optional: can implement additional logic if needed)
+        },
       ),
       body: Center(
         child: Container(

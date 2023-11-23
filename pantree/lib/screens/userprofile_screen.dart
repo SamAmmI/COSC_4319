@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pantree/screens/edit_profile.dart';
 import 'package:pantree/models/user_profile.dart';
 import 'package:pantree/models/local_user_manager.dart';
+import 'package:pantree/themes/themes.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({Key? key}) : super(key: key);
@@ -14,9 +15,19 @@ class UserProfileScreen extends StatefulWidget {
 class _UserProfileScreenState extends State<UserProfileScreen> {
   final LocalUserManager _userManager = LocalUserManager.userInstance;
 
+  String getInitials(String fullName) {
+    List<String> names = fullName.split(' ');
+    if (names.length > 1) {
+      return '${names.first.characters.first}${names.last.characters.first}';
+    } else {
+      return '${names.first.characters.first}';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     User? user = FirebaseAuth.instance.currentUser;
+    UserProfile? userProfile = _userManager.getCachedUser();
 
     return Scaffold(
       appBar: AppBar(
@@ -31,11 +42,19 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                // Display user avatar
+                // Display user avatar with initials
                 CircleAvatar(
                   radius: 60,
-                  backgroundImage:
-                      AssetImage(''), // Add your image asset path here
+                  backgroundColor: Colors.lightBlue,
+                  child: Text(
+                    getInitials(
+                        '${userProfile?.firstName} ${userProfile?.lastName}'),
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 20),
                 Column(
