@@ -76,9 +76,12 @@ class FoodItem {
   void updateNutrientsDetails(Map<String, dynamic> additionalInfo) {
     // Implement the logic to update the nutrient details based on additionalInfo
     // For example:
-    nutrients?['PROCNT'] = additionalInfo['protein'];
-    nutrients?['CHOCDF.net'] = additionalInfo['carbs'];
-    nutrients?['FAT'] = additionalInfo['fat'];
+    nutrients?['PROCNT'] =
+        double.tryParse(additionalInfo['protein'] ?? '0.0')?.toStringAsFixed(2);
+    nutrients?['CHOCDF.net'] =
+        double.tryParse(additionalInfo['carbs'] ?? '0.0')?.toStringAsFixed(2);
+    nutrients?['FAT'] =
+        double.tryParse(additionalInfo['fat'] ?? '0.0')?.toStringAsFixed(2);
   }
 
   String getNutrientDetails(String nutrientKey) {

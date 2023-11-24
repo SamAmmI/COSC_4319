@@ -133,12 +133,12 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
                           ),
                           TextSpan(
                             text:
-                                'Carbs: ${foodItem.getNutrientDetails("CHOCDF")}g, ',
+                                'Carbs: ${foodItem.getNutrientDetails("CHOCDF")}, ',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           TextSpan(
                             text:
-                                'Fats: ${foodItem.getNutrientDetails("FAT")}g\n',
+                                'Fats: ${foodItem.getNutrientDetails("FAT")}\n',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
