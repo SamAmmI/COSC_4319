@@ -17,7 +17,7 @@ class FoodManagement {
           .get();
 
       return snapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
+        final data = doc.data();
         return FoodItem.fromMap(data);
       }).toList();
     } catch (e) {

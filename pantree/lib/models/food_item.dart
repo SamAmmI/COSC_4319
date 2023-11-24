@@ -14,9 +14,9 @@ class FoodItem {
   String? categoryLabel;
   String? image;
   DateTime? dateTime;
-  double? protein; // protein property
-  double? carbs; // carbs property
-  double? fat; // fat property
+  double? protein;
+  double? carbs;
+  double? fat;
   double? quantity;
   double? consumptionCount;
 
@@ -36,9 +36,8 @@ class FoodItem {
       : foodId = data['foodId'] ?? '',
         label = data['label'] ?? '',
         image = data['image'] ?? '',
-        protein =
-            data['protein']?.toDouble(), // Populate protein from Firestore data
-        carbs = data['carbs']?.toDouble(), // Populate carbs from Firestore data
+        protein = data['protein']?.toDouble(),
+        carbs = data['carbs']?.toDouble(),
         fat = data['fat']?.toDouble(); // Populate fat from Firestore data
 
   // Add a factory constructor to create a FoodItem instance from a map
@@ -93,14 +92,14 @@ class FoodItem {
       "name": "Name",
       "calories": "Calories",
       "category": "Category",
-      "CHOCDF": "Carbohydrate (g)",
+      "carbs": "Carbohydrates (g)",
       "CHOCDF.net": "Carbohydrates(net) g",
       "CHOLE": "Cholesterol (mg)",
       "ENERC_KCAL": "Energy",
       "FAMS": "Monosaturated (g)",
       "FAPU": "Polyunsaturated (g)",
       "FASAT": "Total Saturated (g)",
-      "FAT": "Fat (g)",
+      "fat": "Fat (g)",
       "FATRN": "Total Trans Fatty Acids (g)",
       "FE": "Iron mg",
       "FIBTG": "Total Dietary Fiber (g)",
@@ -112,7 +111,7 @@ class FoodItem {
       "NA": "Sodium (mg)",
       "NIA": "Niacin (mg)",
       "P": "Phosphorus (mg)",
-      "PROCNT": "Protein (g)",
+      "protein": "Protein (g)",
       "RIBF": "Riboflavin (g)",
       "SUGAR": "Sugar h",
       "SUGAR.added": "Sugars Added (g)",

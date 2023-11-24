@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:pantree/components/modern_text_box.dart';
 import 'package:pantree/models/local_user_manager.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key}) : super(key: key);
@@ -16,6 +19,9 @@ class _EditProfileState extends State<EditProfile> {
   TextEditingController currentWeightController = TextEditingController();
   TextEditingController goalWeightController = TextEditingController();
 
+  File? _image;
+  final picker = ImagePicker();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,6 +34,9 @@ class _EditProfileState extends State<EditProfile> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              // Display profile picture and image picker
+              _buildProfilePictureSection(),
+              const SizedBox(height: 20),
               ModernTextBox(
                 controller: firstNameController,
                 decoration: InputDecoration(labelText: 'First Name'),
@@ -63,7 +72,7 @@ class _EditProfileState extends State<EditProfile> {
               const SizedBox(height: 40),
               ElevatedButton(
                 onPressed: () async {
-                  // Save the edited profile details
+                  // Save the edited profile details and image
                   String newFirstName = firstNameController.text;
                   String newLastName = lastNameController.text;
                   double? newHeight = double.tryParse(heightController.text);
@@ -74,12 +83,21 @@ class _EditProfileState extends State<EditProfile> {
 
                   final localUserManager = LocalUserManager();
 
-                  //UPDATING USER PROFILE SETTING
+                  // Update user image
+                  if (_image != null) {
+                    // Upload the image to storage and get the URL
+                    String imageUrl = await uploadImageToStorage(_image!);
+                    // Update the user profile with the new image URL
+                    await localUserManager.updateUserAttribute(
+                        'profilePictureUrl', imageUrl);
+                  }
+
+                  // Update other profile details
                   if (newFirstName.isNotEmpty) {
                     await localUserManager.updateUserAttribute(
                         'firstName', newFirstName);
                   }
-                  if (newFirstName.isNotEmpty) {
+                  if (newLastName.isNotEmpty) {
                     await localUserManager.updateUserAttribute(
                         'lastName', newLastName);
                   }
@@ -106,6 +124,80 @@ class _EditProfileState extends State<EditProfile> {
         ),
       ),
     );
+  }
+
+  Widget _buildProfilePictureSection() {
+    return Column(
+      children: [
+        // Display the current profile picture or placeholder
+        _image != null
+            ? CircleAvatar(
+                radius: 60,
+                backgroundImage: FileImage(_image!),
+              )
+            : const CircleAvatar(
+                radius: 60,
+                // You can set a placeholder image here or leave it empty
+              ),
+        const SizedBox(height: 10),
+        // Button to pick image from gallery
+        ElevatedButton(
+          onPressed: () async {
+            await _getImageFromGallery();
+          },
+          child: const Text('Image from Gallery'),
+        ),
+        const SizedBox(height: 10),
+        // Button to take a photo using the camera
+        ElevatedButton(
+          onPressed: () async {
+            await _takePhoto();
+          },
+          child: const Text('Take a Photo'),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _getImageFromGallery() async {
+    try {
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+      setState(() {
+        if (pickedFile != null) {
+          _image = File(pickedFile.path);
+        }
+      });
+    } catch (e) {
+      print('Error picking image from gallery: $e');
+    }
+  }
+
+  Future<void> _takePhoto() async {
+    try {
+      final pickedFile = await picker.pickImage(source: ImageSource.camera);
+
+      setState(() {
+        if (pickedFile != null) {
+          _image = File(pickedFile.path);
+        }
+      });
+    } catch (e) {
+      print('Error taking photo: $e');
+    }
+  }
+
+  Future<String> uploadImageToStorage(File image) async {
+    // Implement your image upload logic here
+    // You can use a storage service or any other method to upload the image
+    // and return the URL
+    // Example:
+    // StorageService storageService = StorageService();
+    // String imageUrl = await storageService.uploadImage(image);
+    // return imageUrl;
+
+    // For demonstration purposes, return an empty URL
+    return '';
   }
 
   @override
