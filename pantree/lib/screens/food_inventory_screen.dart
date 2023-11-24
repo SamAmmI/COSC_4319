@@ -43,7 +43,7 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
     _userId = _user.uid;
 
     _foodManagement = FoodManagement(_userId);
-    _getUserFoodItems();
+    await _getUserFoodItems();
   }
 
   Future<void> _getUserFoodItems() async {
@@ -53,7 +53,7 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
       var additionalInfo =
           await _foodService.fetchAdditionalInfo(foodItem.foodId);
       if (additionalInfo != null) {
-        foodItem.updateNutrientDetails(additionalInfo);
+        foodItem.updateNutrientsDetails(additionalInfo);
       }
     }
 
@@ -128,12 +128,12 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
                         children: [
                           TextSpan(
                             text:
-                                'Proteins: ${foodItem.getNutrientDetails("PROCNT")}g, ',
+                                'Proteins: ${foodItem.getNutrientDetails("PROCNT")}, ',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           TextSpan(
                             text:
-                                'Carbs: ${foodItem.getNutrientDetails("CHOCDF.net")}g, ',
+                                'Carbs: ${foodItem.getNutrientDetails("CHOCDF")}g, ',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           TextSpan(
@@ -213,9 +213,9 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
       MaterialPageRoute(
         builder: (context) => EditNutrientScreen(
           foodItem: foodItem,
-          onUpdate: () {
+          onUpdate: () async {
             // Implement logic to refresh the food items after updating
-            _getUserFoodItems();
+            await _getUserFoodItems();
           },
         ),
       ),
@@ -228,7 +228,7 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
       await FoodService().deleteUserFoodItem(foodItem, _userId);
 
       // Notify parent screen about the update
-      _getUserFoodItems();
+      await _getUserFoodItems();
     } catch (e) {
       // Handle errors, if any
       print('Error deleting food item: $e');
@@ -251,17 +251,22 @@ class EditNutrientScreen extends StatefulWidget {
 }
 
 class _EditNutrientScreenState extends State<EditNutrientScreen> {
-  TextEditingController proteinController = TextEditingController();
-  TextEditingController carbsController = TextEditingController();
-  TextEditingController fatsController = TextEditingController();
+  late TextEditingController proteinController;
+  late TextEditingController carbsController;
+  late TextEditingController fatsController;
 
   @override
   void initState() {
     super.initState();
     // Initialize controllers with existing values
-    proteinController.text = widget.foodItem.nutrients!['PROCNT'].toString();
-    carbsController.text = widget.foodItem.nutrients!['CHOCDF'].toString();
-    fatsController.text = widget.foodItem.nutrients!['FAT'].toString();
+    proteinController = TextEditingController(
+        text: widget.foodItem.getNutrientDetails("PROCNT").replaceAll("g", ""));
+    carbsController = TextEditingController(
+        text: widget.foodItem
+            .getNutrientDetails("CHOCDF.net")
+            .replaceAll("g", ""));
+    fatsController = TextEditingController(
+        text: widget.foodItem.getNutrientDetails("FAT").replaceAll("g", ""));
   }
 
   @override
@@ -309,7 +314,7 @@ class _EditNutrientScreenState extends State<EditNutrientScreen> {
     // Update the nutrient values
     widget.foodItem.nutrients?['PROCNT'] =
         double.tryParse(proteinController.text) ?? 0.0;
-    widget.foodItem.nutrients?['CHOCDF'] =
+    widget.foodItem.nutrients?['CHOCDF.net'] =
         double.tryParse(carbsController.text) ?? 0.0;
     widget.foodItem.nutrients?['FAT'] =
         double.tryParse(fatsController.text) ?? 0.0;

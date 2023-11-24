@@ -51,15 +51,13 @@ class FoodItem {
       categoryLabel: map['categoryLabel'],
       image: map['image'],
       dateTime: map['dateTime'] != null
-          ? (map['dateTime'] as Timestamp)
-              .toDate() // Convert Timestamp to DateTime
+          ? (map['dateTime'] as Timestamp).toDate()
           : null,
-      quantity: map['quantity']?.toDouble(), // quantity
-      consumptionCount: map['consumptionCount']?.toDouble(), //consumptionCount
+      quantity: map['quantity']?.toDouble(),
+      consumptionCount: map['consumptionCount']?.toDouble(),
     );
   }
 
-  // Add a method to convert a FoodItem instance to a map
   Map<String, dynamic> toMap() {
     return {
       'foodId': foodId,
@@ -70,64 +68,20 @@ class FoodItem {
       'categoryLabel': categoryLabel,
       'image': image,
       'dateTime': dateTime != null ? Timestamp.fromDate(dateTime!) : null,
-      'quantity': quantity, // quantity
-      'consumptionCount': consumptionCount, // consumptionCount
+      'quantity': quantity,
+      'consumptionCount': consumptionCount,
     };
   }
 
-  void updateNutrientDetails(Map<String, dynamic> additionalInfo) {
+  void updateNutrientsDetails(Map<String, dynamic> additionalInfo) {
     // Implement the logic to update the nutrient details based on additionalInfo
     // For example:
-    // nutrientDetails['PROCNT'] = additionalInfo['protein'];
-    // nutrientDetails['CHOCDF.net'] = additionalInfo['carbs'];
-    // nutrientDetails['FAT'] = additionalInfo['fat'];
+    nutrients?['PROCNT'] = additionalInfo['protein'];
+    nutrients?['CHOCDF.net'] = additionalInfo['carbs'];
+    nutrients?['FAT'] = additionalInfo['fat'];
   }
 
-  // Add the missing method
   String getNutrientDetails(String nutrientKey) {
-    // Implement the logic to get nutrient details based on the nutrientKey
-    // For example:
-    // return '${nutrientDetails[nutrientKey]}g';
-    Map<String, String> nutrientNames = {
-      "name": "Name",
-      "calories": "Calories",
-      "category": "Category",
-      "carbs": "Carbohydrates (g)",
-      "CHOCDF.net": "Carbohydrates(net) g",
-      "CHOLE": "Cholesterol (mg)",
-      "ENERC_KCAL": "Energy",
-      "FAMS": "Monosaturated (g)",
-      "FAPU": "Polyunsaturated (g)",
-      "FASAT": "Total Saturated (g)",
-      "fat": "Fat (g)",
-      "FATRN": "Total Trans Fatty Acids (g)",
-      "FE": "Iron mg",
-      "FIBTG": "Total Dietary Fiber (g)",
-      "FOLAC": "Folic Acid",
-      "FOLDFE": "Foloate",
-      "FOLFD": "Folate(food)",
-      "K": "Potassium (mg)",
-      "MG": "Magnesium (mg)",
-      "NA": "Sodium (mg)",
-      "NIA": "Niacin (mg)",
-      "P": "Phosphorus (mg)",
-      "protein": "Protein (g)",
-      "RIBF": "Riboflavin (g)",
-      "SUGAR": "Sugar h",
-      "SUGAR.added": "Sugars Added (g)",
-      "Sugar.alcohol": "Surgar Alchohols (g)",
-      "THIA": "Thiamin (mg)",
-      "TOCPHA": "Vitamin E",
-      "VITA_RAE": "Vitamin A RAE",
-      "VITB12": "Vitamin B12",
-      "VITB6A": "Vitamin B6",
-      "VITC": "Vitamin C",
-      "VITD": "Vitamin D",
-      "VITK1": "Vitamin k",
-      "WATER": "Water (g)",
-      "ZN": "Zinc (mg)",
-    };
-
-    return nutrientNames[nutrientKey] ?? 'Unknown';
+    return '${nutrients?[nutrientKey] ?? 'Unknown'}g';
   }
 }
