@@ -50,6 +50,8 @@ class UserProfile {
 
   double? get fat => null;
 
+  set profilePictureUrl(profilePictureUrl) {}
+
   // method to store user data into firebase
   Map<String, dynamic> toMap() {
     Map<String, double> macros = calcMacros();

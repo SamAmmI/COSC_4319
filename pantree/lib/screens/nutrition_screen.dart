@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pantree/components/drawer.dart';
 import 'package:pantree/components/settings_drawer.dart';
 import 'package:pantree/models/user_profile.dart';
 import 'package:pantree/screens/daily_consumptionBarGraph.dart';
