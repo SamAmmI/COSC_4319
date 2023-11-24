@@ -85,6 +85,6 @@ class FoodItem {
   }
 
   String getNutrientDetails(String nutrientKey) {
-    return '${nutrients?[nutrientKey] ?? 'Unknown'}g';
+    return '${nutrients?[nutrientKey] ?? 'Unknown'} g';
   }
 }
