@@ -128,12 +128,12 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
                         children: [
                           TextSpan(
                             text:
-                                'Proteins: ${foodItem.getNutrientDetails("PROCNT")}, ',
+                                'Proteins: ${foodItem.getNutrientDetails("PROCNT")} ',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           TextSpan(
                             text:
-                                'Carbs: ${foodItem.getNutrientDetails("CHOCDF")}, ',
+                                'Carbs: ${foodItem.getNutrientDetails("CHOCDF")}',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           TextSpan(
