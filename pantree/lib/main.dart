@@ -1,28 +1,35 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:testapp/auth/auth.dart';
-import 'package:testapp/firebase_options.dart';
-import 'package:testapp/themes/themes.dart';
+import 'package:pantree/auth/auth.dart';
+import 'package:pantree/firebase_options.dart';
+import 'package:pantree/components/theme_notifier.dart';
+import 'package:provider/provider.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ThemeNotifier(),
+      child: const MyApp(),
+    ),
   );
-  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   final Key? widgetkey;
 
-  const MyApp({super.key, this.widgetkey});
+  const MyApp({
+    super.key,
+    this.widgetkey,
+  });
 
   @override
   Widget build(BuildContext context) {
+    var themeNotifier = Provider.of<ThemeNotifier>(context);
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: darkTheme,
-      home: const AuthPage(),
-    );
+        debugShowCheckedModeBanner: false,
+        theme: themeNotifier.currentTheme,
+        home: const AuthPage());
   }
 }

@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:testapp/models/food_item.dart'; //food item class
+/*import 'package:flutter/material.dart';
+import 'package:pantree/models/food_item.dart'; //food item class
 
 class AddFoodScreen extends StatelessWidget {
   final List<FoodItem> foodItems;
@@ -14,7 +14,9 @@ class AddFoodScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Food Item'),
+        title: Text('Add Food Item',
+          style: TextStyle(color: Theme.of(context).colorScheme.primary)
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -35,7 +37,7 @@ class AddFoodScreen extends StatelessWidget {
                 var name = nameController.text;
                 var calories = double.tryParse(caloriesController.text) ?? 0.0;
                 if (name.isNotEmpty && calories > 0) {
-                  foodItems.add(FoodItem(name: name, calories: calories));
+                 // foodItems.add(FoodItem(name: name, : calories));
                   Navigator.pop(context);
                 }
               },
@@ -47,3 +49,4 @@ class AddFoodScreen extends StatelessWidget {
     );
   }
 }
+*/
