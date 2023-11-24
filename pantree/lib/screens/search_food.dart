@@ -48,7 +48,8 @@ class SearchFoodState extends State<SearchFood> {
     }
 
     return nutrients.entries
-        .map((e) => '${searchedItem!.getNutrientDetails(e.key)}: ${e.value}')
+        .map((e) =>
+            '${FoodItem.getFormattedNutrientLabel(e.key)}: ${FoodItem.formatNutrientValue(e.key, e.value)}g')
         .join('\n');
   }
 

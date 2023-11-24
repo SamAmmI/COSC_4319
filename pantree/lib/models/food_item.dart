@@ -1,8 +1,3 @@
-/*
-  hope to continue to work on this 'food_item' to implement better 
-  retrival of data such as nutrients, catergory search,  image search
-  very basic structure right now flut
-*/
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FoodItem {
@@ -20,17 +15,18 @@ class FoodItem {
   double? quantity;
   double? consumptionCount;
 
-  FoodItem(
-      {required this.foodId,
-      required this.label,
-      this.knownAs,
-      this.nutrients,
-      this.category,
-      this.categoryLabel,
-      this.image,
-      this.dateTime,
-      this.quantity,
-      this.consumptionCount});
+  FoodItem({
+    required this.foodId,
+    required this.label,
+    this.knownAs,
+    this.nutrients,
+    this.category,
+    this.categoryLabel,
+    this.image,
+    this.dateTime,
+    this.quantity,
+    this.consumptionCount,
+  });
 
   FoodItem.fromFirestore(Map<String, dynamic> data)
       : foodId = data['foodId'] ?? '',
@@ -38,9 +34,8 @@ class FoodItem {
         image = data['image'] ?? '',
         protein = data['protein']?.toDouble(),
         carbs = data['carbs']?.toDouble(),
-        fat = data['fat']?.toDouble(); // Populate fat from Firestore data
+        fat = data['fat']?.toDouble();
 
-  // Add a factory constructor to create a FoodItem instance from a map
   factory FoodItem.fromMap(Map<String, dynamic> map) {
     return FoodItem(
       foodId: map['foodId'] ?? '',
@@ -74,17 +69,30 @@ class FoodItem {
   }
 
   void updateNutrientsDetails(Map<String, dynamic> additionalInfo) {
-    // Implement the logic to update the nutrient details based on additionalInfo
-    // For example:
-    nutrients?['PROCNT'] =
-        double.tryParse(additionalInfo['protein'] ?? '0.0')?.toStringAsFixed(2);
-    nutrients?['CHOCDF.net'] =
-        double.tryParse(additionalInfo['carbs'] ?? '0.0')?.toStringAsFixed(2);
-    nutrients?['FAT'] =
-        double.tryParse(additionalInfo['fat'] ?? '0.0')?.toStringAsFixed(2);
+    nutrients?['PROCNT'] = additionalInfo['protein'];
+    nutrients?['CHOCDF.net'] = additionalInfo['carbs'];
+    nutrients?['FAT'] = additionalInfo['fat'];
   }
 
   String getNutrientDetails(String nutrientKey) {
-    return '${nutrients?[nutrientKey] ?? 'Unknown'} g';
+    return '${formatNutrientValue(nutrientKey, nutrients?[nutrientKey])}g';
+  }
+
+  static String getFormattedNutrientLabel(String nutrientKey) {
+    // Implement the logic to format nutrient labels as needed
+    // For example, capitalize the first letter
+    return nutrientKey.isNotEmpty
+        ? nutrientKey[0].toUpperCase() + nutrientKey.substring(1)
+        : nutrientKey;
+  }
+
+  static String formatNutrientValue(String nutrientKey, dynamic value) {
+    // Implement the logic to format nutrient values as needed
+    // For example, limit decimal places to a maximum of two digits
+    if (value is double) {
+      return value.toStringAsFixed(2);
+    } else {
+      return value.toString();
+    }
   }
 }

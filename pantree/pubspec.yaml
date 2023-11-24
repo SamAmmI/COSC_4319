@@ -49,6 +49,7 @@ dependencies:
   persistent_bottom_nav_bar: ^5.0.2
   fl_chart: ^0.64.0
   image_picker: ^1.0.4
+  intl: ^0.18.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
