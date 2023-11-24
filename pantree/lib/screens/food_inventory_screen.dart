@@ -310,19 +310,19 @@ class _EditNutrientScreenState extends State<EditNutrientScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Proteins (g):'),
+            Text('Proteins:'),
             TextField(
               controller: proteinController,
               keyboardType: TextInputType.number,
             ),
             SizedBox(height: 16.0),
-            Text('Carbs (g):'),
+            Text('Carbs:'),
             TextField(
               controller: carbsController,
               keyboardType: TextInputType.number,
             ),
             SizedBox(height: 16.0),
-            Text('Fats (g):'),
+            Text('Fats:'),
             TextField(
               controller: fatsController,
               keyboardType: TextInputType.number,

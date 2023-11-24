@@ -75,7 +75,7 @@ class FoodItem {
   }
 
   String getNutrientDetails(String nutrientKey) {
-    return '${formatNutrientValue(nutrientKey, nutrients?[nutrientKey])}g';
+    return '${formatNutrientValue(nutrientKey, nutrients?[nutrientKey])} g';
   }
 
   static String getFormattedNutrientLabel(String nutrientKey) {
