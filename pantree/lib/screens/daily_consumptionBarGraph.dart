@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -24,12 +25,19 @@ class _DailyConsumptionScreenGraphState
   double? userCarbGoal;
   double? userFatGoal;
   List<NutrientBarData> nutrientDataList = [];
+  int? selectedNutrientIndex;
 
   @override
   void initState() {
     super.initState();
     fetchCurrentConsumption();
     fetchUserProfile();
+  }
+
+  void setSelectedNutrientIndex(int index) {
+    setState(() {
+      selectedNutrientIndex = index;
+    });
   }
 
   // WHERE WE FETCH THE USER CURRENT CONSUMPTION
@@ -73,12 +81,15 @@ class _DailyConsumptionScreenGraphState
 
     if (currentConsumption != null && userProfile != null) {
       // Extract the nutrient values from currentConsumption and userProfile
-      double currentCalories = currentConsumption!.totalCalories;
+
+      double scaleCalories = 10;
+      double currentCalories =
+          (currentConsumption!.totalCalories) / scaleCalories;
       double currentProteins = currentConsumption!.totalProteins;
       double currentCarbs = currentConsumption!.totalCarbs;
       double currentFats = currentConsumption!.totalFats;
 
-      double goalCalories = userCalorieGoal ?? 0;
+      double goalCalories = (userCalorieGoal ?? 0) / scaleCalories;
       double goalProteins = userProteinGoal ?? 0;
       double goalCarbs = userCarbGoal ?? 0;
       double goalFats = userFatGoal ?? 0;
@@ -156,7 +167,9 @@ class _DailyConsumptionScreenGraphState
                             builder: (BuildContext context,
                                 BoxConstraints constraints) {
                               return NutrientBarChart(
-                                  dataList: nutrientDataList);
+                                dataList: nutrientDataList,
+                                selectedIndex: selectedNutrientIndex,
+                              );
                             }, // Removed Expanded),
                           ),
                         ))
@@ -184,14 +197,22 @@ class _DailyConsumptionScreenGraphState
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    buildNutrientCard('Calories',
-                        '${currentConsumption?.totalCalories.toStringAsFixed(0)} kcal'),
-                    buildNutrientCard('Proteins',
-                        '${currentConsumption?.totalProteins.toStringAsFixed(0)} g'),
-                    buildNutrientCard('Carbs',
-                        '${currentConsumption?.totalCarbs.toStringAsFixed(0)} g'),
-                    buildNutrientCard('Fats',
-                        '${currentConsumption?.totalFats.toStringAsFixed(0)} g'),
+                    buildNutrientCard(
+                        'Calories',
+                        '${currentConsumption?.totalCalories.toStringAsFixed(0)} kcal',
+                        0),
+                    buildNutrientCard(
+                        'Proteins',
+                        '${currentConsumption?.totalProteins.toStringAsFixed(0)} g',
+                        1),
+                    buildNutrientCard(
+                        'Carbs',
+                        '${currentConsumption?.totalCarbs.toStringAsFixed(0)} g',
+                        2),
+                    buildNutrientCard(
+                        'Fats',
+                        '${currentConsumption?.totalFats.toStringAsFixed(0)} g',
+                        3),
                   ],
                 ),
               ],
@@ -203,45 +224,56 @@ class _DailyConsumptionScreenGraphState
   }
 
 // widget for each nutrient card such as calories, and others....
-  Widget buildNutrientCard(String nutrient, String value) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-      child: Container(
-        width: double.infinity,
-        height: 60,
-        decoration: BoxDecoration(
-          color: Theme.of(context).appBarTheme.backgroundColor ??
-              Colors.black ??
-              Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 2,
-              color: Color(0xFFE0E3E7),
-              offset: Offset(0, .2),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                nutrient,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              SizedBox(height: 4),
-              Text(
-                value,
-                style: Theme.of(context).textTheme.bodySmall,
+  Widget buildNutrientCard(String nutrient, String value, int index) {
+    return GestureDetector(
+      onTap: () {
+        showTooltipForNutrient(index);
+      },
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+        child: Container(
+          width: double.infinity,
+          height: 60,
+          decoration: BoxDecoration(
+            color: Theme.of(context).appBarTheme.backgroundColor ??
+                Colors.black ??
+                Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 2,
+                color: Color(0xFFE0E3E7),
+                offset: Offset(0, .2),
               ),
             ],
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(8),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  nutrient,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                SizedBox(height: 4),
+                Text(
+                  value,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  void showTooltipForNutrient(int index) {
+    setState(() {
+      selectedNutrientIndex = index;
+    });
   }
 }
 
@@ -255,20 +287,73 @@ class NutrientBarData {
 
 class NutrientBarChart extends StatefulWidget {
   final List<NutrientBarData> dataList;
+  final int? selectedIndex;
+  final ValueChanged<int?>? onBarTapped;
 
-  NutrientBarChart({Key? key, required this.dataList}) : super(key: key);
+  NutrientBarChart({
+    Key? key,
+    required this.dataList,
+    this.selectedIndex,
+    this.onBarTapped,
+  }) : super(key: key);
 
   @override
   _NutrientBarChartState createState() => _NutrientBarChartState();
 }
 
 class _NutrientBarChartState extends State<NutrientBarChart> {
+  int? selectedNutrientIndex;
+
+  double calculateMaxY() {
+    double maxValue = 0;
+    for (var data in widget.dataList) {
+      maxValue = max(maxValue, data.consumption);
+      maxValue = max(maxValue, data.goal);
+    }
+    return maxValue + 100; // Adding a margin of 100
+  }
+
   @override
   Widget build(BuildContext context) {
     return BarChart(
       BarChartData(
         gridData: FlGridData(show: false),
-        titlesData: FlTitlesData(show: false),
+        titlesData: FlTitlesData(
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 30,
+              getTitlesWidget: (double value, TitleMeta meta) {
+                Widget text;
+                switch (value.toInt()) {
+                  case 0:
+                    text = Text('Calories');
+                    break;
+                  case 1:
+                    text = Text('Proteins');
+                    break;
+                  case 2:
+                    text = Text('Carbs');
+                    break;
+                  case 3:
+                    text = Text('Fats');
+                    break;
+                  default:
+                    text = Text('');
+                }
+                return SideTitleWidget(
+                  axisSide: meta.axisSide,
+                  space: 8,
+                  child: text,
+                );
+              },
+            ),
+          ),
+        ),
+        maxY: calculateMaxY(),
         borderData: FlBorderData(
           show: true,
           border: Border.all(
@@ -276,26 +361,62 @@ class _NutrientBarChartState extends State<NutrientBarChart> {
             width: 1,
           ),
         ),
+        barTouchData: BarTouchData(
+            enabled: true,
+            touchTooltipData: BarTouchTooltipData(
+              tooltipBgColor: Colors.blueGrey,
+              getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                String nutrient = widget.dataList[groupIndex].nutrient;
+                double actualValue = widget.dataList[groupIndex].consumption;
+                double goalValue = widget.dataList[groupIndex].goal;
+
+                // rescale calories because it was scaled for improvement visually
+                if (nutrient == 'Calories') {
+                  actualValue *= 10;
+                  goalValue *= 10;
+                }
+
+                return BarTooltipItem(
+                  '$nutrient\nCurrent: ${actualValue.round()}\nGoal: ${goalValue.round()}',
+                  TextStyle(color: Colors.white),
+                );
+              },
+            )),
         barGroups: widget.dataList
             .asMap()
             .map((index, data) {
               return MapEntry(
-                  index,
-                  BarChartGroupData(
-                    x: index,
-                    barRods: [
-                      BarChartRodData(
-                        toY: data.consumption,
-                        color: Colors.blue,
-                        width: 16,
+                index,
+                BarChartGroupData(
+                  x: index,
+                  barRods: [
+                    BarChartRodData(
+                      toY: data.consumption,
+                      color: Colors.blue,
+                      width: 16,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(2),
+                        topRight: Radius.circular(2),
+                        bottomLeft: Radius.zero,
+                        bottomRight: Radius.zero,
                       ),
-                      BarChartRodData(
-                        toY: data.goal,
-                        color: Colors.green,
-                        width: 16,
+                    ),
+                    BarChartRodData(
+                      toY: data.goal,
+                      color: Colors.green,
+                      width: 16,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(2),
+                        topRight: Radius.circular(2),
+                        bottomLeft: Radius.zero,
+                        bottomRight: Radius.zero,
                       ),
-                    ],
-                  ));
+                    ),
+                  ],
+                  //showingTooltipIndicators:
+                  //widget.selectedIndex == index ? [index] : [],
+                ),
+              );
             })
             .values
             .toList(),
