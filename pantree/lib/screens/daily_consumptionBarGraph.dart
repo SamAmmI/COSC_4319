@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/src/scheduler/ticker.dart';
 import 'package:pantree/models/local_user_manager.dart';
 import 'package:pantree/models/user_profile.dart';
 import 'package:pantree/services/user_consumption_service.dart';
@@ -301,8 +302,27 @@ class NutrientBarChart extends StatefulWidget {
   _NutrientBarChartState createState() => _NutrientBarChartState();
 }
 
-class _NutrientBarChartState extends State<NutrientBarChart> {
+class _NutrientBarChartState extends State<NutrientBarChart>
+    implements TickerProvider {
   int? selectedNutrientIndex;
+  late AnimationController animationController;
+  final Curve curve = Curves.easeInOut;
+  final Tween<double> barTween = Tween<double>(begin: 0.0, end: 1.0);
+
+  @override
+  void initState() {
+    super.initState();
+    animationController = AnimationController(
+      duration: Duration(seconds: 1), // Adjust the duration as needed
+      vsync: this,
+    );
+
+    animationController.addListener(() {
+      setState(() {});
+    });
+
+    animationController.forward();
+  }
 
   double calculateMaxY() {
     double maxValue = 0;
@@ -391,7 +411,8 @@ class _NutrientBarChartState extends State<NutrientBarChart> {
                   x: index,
                   barRods: [
                     BarChartRodData(
-                      toY: data.consumption,
+                      toY: data.consumption *
+                          barTween.evaluate(animationController),
                       color: Colors.blue,
                       width: 16,
                       borderRadius: BorderRadius.only(
@@ -402,7 +423,7 @@ class _NutrientBarChartState extends State<NutrientBarChart> {
                       ),
                     ),
                     BarChartRodData(
-                      toY: data.goal,
+                      toY: data.goal * barTween.evaluate(animationController),
                       color: Colors.green,
                       width: 16,
                       borderRadius: BorderRadius.only(
@@ -422,5 +443,10 @@ class _NutrientBarChartState extends State<NutrientBarChart> {
             .toList(),
       ),
     );
+  }
+
+  @override
+  Ticker createTicker(TickerCallback onTick) {
+    return Ticker(onTick);
   }
 }
