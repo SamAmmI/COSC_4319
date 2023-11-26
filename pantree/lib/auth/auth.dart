@@ -44,7 +44,7 @@ class _AuthPageState extends State<AuthPage> {
     print('Selected Food Item: $foodItem');
   }
 
-  PersistentTabController controller = PersistentTabController(initialIndex: 0);
+  PersistentTabController controller = PersistentTabController(initialIndex: 3);
   List<Widget> _buildScreens() {
     return [
       FoodInventoryScreen(
@@ -111,6 +111,7 @@ class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
@@ -133,7 +134,7 @@ class _AuthPageState extends State<AuthPage> {
                     confineInSafeArea: true,
                     backgroundColor: Theme.of(context).colorScheme.background,
                     handleAndroidBackButtonPress: true,
-                    resizeToAvoidBottomInset: true,
+                    resizeToAvoidBottomInset: false,
                     stateManagement: true,
                     hideNavigationBarWhenKeyboardShows: true,
                     popAllScreensOnTapOfSelectedTab: true,
