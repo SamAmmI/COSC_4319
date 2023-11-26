@@ -1,5 +1,6 @@
 # COSC_4319
-Dietary App
+Pantree
+Food Tracking & Nutrition App
 
  # Instructions to Run App
     -   Start Emulator
