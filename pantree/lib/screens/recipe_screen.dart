@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,30 +17,45 @@ class recipe_screen extends StatefulWidget {
 
 class _recipeScreenState extends State<recipe_screen> {
   List<RecipeModel> recipes = <RecipeModel>[];
-  TextEditingController textEditingController = TextEditingController();
 
   String applicationId = "c25df61e";
   String applicationKey = "eaf1f2fc95e4c096ab81c799330e585b";
 
-  getRecipes(String query) async {
-    //query here is the main thing you change to get different food, but when you search it doesn't delete your last searched entry.
-    String url =
-        "https://api.edamam.com/search?q=$query&app_id=$applicationId&app_key=$applicationKey";
+  Future<void> getRecipes() async {
+  // Get the current user
+  User? currentUser = FirebaseAuth.instance.currentUser;
 
-    var response = await http.get(Uri.parse(url));
-    Map<String, dynamic> jsonData = jsonDecode(response.body);
+  if (currentUser != null) {
+    // Get foodItems collection for the current user
+    CollectionReference foodItemsRef = FirebaseFirestore.instance.collection('users').doc(currentUser.uid).collection('foodItems');
 
-    jsonData["hits"].forEach((element) {
-      print(element.toString());
+    // Get all foodItem documents
+    QuerySnapshot foodItemsSnapshot = await foodItemsRef.get();
+    List<QueryDocumentSnapshot> allFoodItems = foodItemsSnapshot.docs;
 
-      RecipeModel recipeModel = RecipeModel();
-      recipeModel = RecipeModel.fromMap(element["recipe"]);
-      recipes.add(recipeModel);
-    });
+    for (QueryDocumentSnapshot foodItem in allFoodItems) {
+      // Get label field from each foodItem document
+      String label = foodItem.get('label');
 
-    setState(() {});
-    print("${recipes.toString()}");
+      String url =
+          "https://api.edamam.com/search?q=$label&app_id=$applicationId&app_key=$applicationKey";
+
+      var response = await http.get(Uri.parse(url));
+      Map<String, dynamic> jsonData = jsonDecode(response.body);
+
+      jsonData["hits"].forEach((element) {
+        print(element.toString());
+
+        RecipeModel recipeModel = RecipeModel();
+        recipeModel = RecipeModel.fromMap(element["recipe"]);
+        recipes.add(recipeModel);
+      });
+
+      print("${recipes.toString()}");
+      print(label);
+    }
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +112,7 @@ class _recipeScreenState extends State<recipe_screen> {
                       height: 30,
                     ),
                     Text(
-                      "Enter Your Ingredients Below",
+                      "Click the search icon below for suggested recipes",
                       style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
                     SizedBox(
@@ -108,29 +125,14 @@ class _recipeScreenState extends State<recipe_screen> {
                       width: MediaQuery.of(context).size.width,
                       child: Row(
                         children: <Widget>[
-                          Expanded(
-                            child: TextField(
-                              controller: textEditingController,
-                              decoration: InputDecoration(
-                                  hintText: "Enter Ingredients",
-                                  hintStyle: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white.withOpacity(0.5),
-                                  )),
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
                           SizedBox(
                             width: 16,
                           ),
                           InkWell(
                             onTap: () {
-                              if (textEditingController.text.isNotEmpty) {
-                                getRecipes(textEditingController.text);
-                              }
+                                setState(() {
+                                  getRecipes();
+                                });
                             },
                             child: Container(
                               child: Icon(
@@ -169,7 +171,7 @@ class _recipeScreenState extends State<recipe_screen> {
             ),
           ],
         ));
-  }
+ }
 }
 
 class RecipieTile extends StatefulWidget {

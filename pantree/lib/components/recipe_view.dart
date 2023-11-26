@@ -59,7 +59,7 @@ class _RecipeViewState extends State<RecipeView> {
             ),
           ),
           Container(
-            height: MediaQuery.of(context).size.height - 100,
+            height: MediaQuery.of(context).size.height - 123,
             width: MediaQuery.of(context).size.width,
             child: WebView(
                 initialUrl: finalUrl,
