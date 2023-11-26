@@ -18,10 +18,10 @@ class recipe_screen extends StatefulWidget {
 class _recipeScreenState extends State<recipe_screen> {
   List<RecipeModel> recipes = <RecipeModel>[];
 
-  String applicationId = "c25df61e";
-  String applicationKey = "eaf1f2fc95e4c096ab81c799330e585b";
+String applicationId = "c25df61e";
+String applicationKey = "eaf1f2fc95e4c096ab81c799330e585b";
 
-  Future<void> getRecipes() async {
+Future<void> getRecipes() async {
   // Get the current user
   User? currentUser = FirebaseAuth.instance.currentUser;
 
@@ -33,27 +33,31 @@ class _recipeScreenState extends State<recipe_screen> {
     QuerySnapshot foodItemsSnapshot = await foodItemsRef.get();
     List<QueryDocumentSnapshot> allFoodItems = foodItemsSnapshot.docs;
 
+    // Save all foodItems into one string separated by commas
+    List<String> labels = [];
     for (QueryDocumentSnapshot foodItem in allFoodItems) {
       // Get label field from each foodItem document
       String label = foodItem.get('label');
-
-      String url =
-          "https://api.edamam.com/search?q=$label&app_id=$applicationId&app_key=$applicationKey";
-
-      var response = await http.get(Uri.parse(url));
-      Map<String, dynamic> jsonData = jsonDecode(response.body);
-
-      jsonData["hits"].forEach((element) {
-        print(element.toString());
-
-        RecipeModel recipeModel = RecipeModel();
-        recipeModel = RecipeModel.fromMap(element["recipe"]);
-        recipes.add(recipeModel);
-      });
-
-      print("${recipes.toString()}");
-      print(label);
+      labels.add(label);
     }
+    String labelsString = labels.join(',');
+
+    String url =
+        "https://api.edamam.com/search?q=$labelsString&app_id=$applicationId&app_key=$applicationKey";
+
+    var response = await http.get(Uri.parse(url));
+    Map<String, dynamic> jsonData = jsonDecode(response.body);
+
+    jsonData["hits"].forEach((element) {
+      print(element.toString());
+
+      RecipeModel recipeModel = RecipeModel();
+      recipeModel = RecipeModel.fromMap(element["recipe"]);
+      recipes.add(recipeModel);
+    });
+
+    print("${recipes.toString()}");
+    print(labelsString);
   }
 }
 
