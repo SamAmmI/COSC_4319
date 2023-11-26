@@ -56,6 +56,45 @@ class _recipeScreenState extends State<recipe_screen> {
     }
   }
 }
+  Future<void> getRecipesTogether() async {
+  // Get the current user
+  // Get the current user
+  User? currentUser = FirebaseAuth.instance.currentUser;
+
+  if (currentUser != null) {
+    // Get foodItems collection for the current user
+    CollectionReference foodItemsRef = FirebaseFirestore.instance.collection('users').doc(currentUser.uid).collection('foodItems');
+
+    // Get all foodItem documents
+    QuerySnapshot foodItemsSnapshot = await foodItemsRef.get();
+    List<QueryDocumentSnapshot> allFoodItems = foodItemsSnapshot.docs;
+
+    // Save all foodItems into one string separated by commas
+    List<String> labels = [];
+    for (QueryDocumentSnapshot foodItem in allFoodItems) {
+      // Get label field from each foodItem document
+      String label = foodItem.get('label');
+      labels.add(label);
+    }
+    String labelsString = labels.join(',');
+
+    String url =
+        "https://api.edamam.com/search?q=$labelsString&app_id=$applicationId&app_key=$applicationKey";
+
+    var response = await http.get(Uri.parse(url));
+    Map<String, dynamic> jsonData = jsonDecode(response.body);
+
+    jsonData["hits"].forEach((element) {
+      print(element.toString());
+
+      RecipeModel recipeModel = RecipeModel();
+      recipeModel = RecipeModel.fromMap(element["recipe"]);
+      recipes.add(recipeModel);
+    });
+
+    print("${recipes.toString()}");
+  }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -135,8 +174,57 @@ class _recipeScreenState extends State<recipe_screen> {
                                 });
                             },
                             child: Container(
+                              child: Row(
+                                children: <Widget>[
+                                Icon(
+                                  Icons.search,
+                                  color: Colors.white,
+                                ),
+                                SizedBox(width: 1), // You can adjust this value as needed
+                              Text(
+                              'Individual Search',
+                              style: TextStyle(
+                              color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 15),
+                          InkWell(
+                            onTap: () {
+                                setState(() {
+                                  getRecipesTogether();
+                                });
+                            },
+                            child: Container(
+                              child: Row(
+                                children: <Widget>[
+                                Icon(
+                                  Icons.search,
+                                  color: Colors.white,
+                                ),
+                                SizedBox(width: 1), // You can adjust this value as needed
+                              Text(
+                              'Grouped Search',
+                              style: TextStyle(
+                              color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                          InkWell(
+                            onTap:() {
+                              setState(() {
+                                recipes.clear();
+                              });
+                            },
+                            child: Container(
                               child: Icon(
-                                Icons.search,
+                                Icons.refresh,
                                 color: Colors.white,
                               ),
                             ),
