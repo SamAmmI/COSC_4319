@@ -216,6 +216,7 @@ class _recipeScreenState extends State<recipe_screen> {
                           ),
                         ),
                       ),
+                      SizedBox(width: 10,),
                           InkWell(
                             onTap:() {
                               setState(() {
