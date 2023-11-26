@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 import 'package:pantree/models/food_item.dart';
 import 'package:pantree/screens/search_food.dart';
 import 'package:pantree/components/food_image.dart';
@@ -43,7 +44,7 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
     _userId = _user.uid;
 
     _foodManagement = FoodManagement(_userId);
-    _getUserFoodItems();
+    await _getUserFoodItems();
   }
 
   Future<void> _getUserFoodItems() async {
@@ -53,7 +54,7 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
       var additionalInfo =
           await _foodService.fetchAdditionalInfo(foodItem.foodId);
       if (additionalInfo != null) {
-        foodItem.updateNutrientDetails(additionalInfo);
+        foodItem.updateNutrientsDetails(additionalInfo);
       }
     }
 
@@ -91,95 +92,124 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
           // Navigate to settings screen (optional: can implement additional logic if needed)
         },
       ),
-      body: ListView.builder(
-        itemCount: groupedItems.length,
-        itemBuilder: (context, index) {
-          final dateKey = groupedItems.keys.elementAt(index);
-          final foodItems = groupedItems[dateKey]!;
+      body: _userFoodItems.isEmpty
+          ? Center(
+              child: Text(
+                'Your food inventory is empty. Add items by tapping the + button.',
+                style: Theme.of(context).textTheme.subtitle1,
+              ),
+            )
+          : ListView.builder(
+              itemCount: groupedItems.length,
+              itemBuilder: (context, index) {
+                final dateKey = groupedItems.keys.elementAt(index);
+                final foodItems = groupedItems[dateKey]!;
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  dateKey,
-                  style: Theme.of(context).textTheme.subtitle1,
-                ),
-              ),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: ClampingScrollPhysics(),
-                itemCount: foodItems.length,
-                itemBuilder: (context, index) {
-                  var foodItem = foodItems[index];
-                  return ListTile(
-                    leading: FoodImage(
-                      foodId: foodItem.foodId,
-                      size: 56.0,
-                    ),
-                    title: Text(
-                      foodItem.label,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    subtitle: RichText(
-                      text: TextSpan(
-                        style: Theme.of(context).textTheme.bodySmall,
-                        children: [
-                          TextSpan(
-                            text:
-                                'Proteins: ${foodItem.getNutrientDetails("PROCNT")}g, ',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          TextSpan(
-                            text:
-                                'Carbs: ${foodItem.getNutrientDetails("CHOCDF.net")}g, ',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          TextSpan(
-                            text:
-                                'Fats: ${foodItem.getNutrientDetails("FAT")}g\n',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
+                return Card(
+                  elevation: 3,
+                  margin: EdgeInsets.all(8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          DateFormat.yMd().format(foodItems[0].dateTime!),
+                          style: Theme.of(context).textTheme.subtitle1,
+                        ),
                       ),
-                    ),
-                    subtitleTextStyle: Theme.of(context).textTheme.bodySmall,
-                    trailing: PopupMenuButton<String>(
-                      icon: Icon(Icons.more_vert),
-                      onSelected: (String choice) {
-                        if (choice == 'edit') {
-                          _editNutrientInfo(foodItem);
-                        } else if (choice == 'delete') {
-                          _deleteFoodItem(foodItem);
-                        }
-                      },
-                      itemBuilder: (BuildContext context) {
-                        return <PopupMenuEntry<String>>[
-                          const PopupMenuItem<String>(
-                            value: 'edit',
-                            child: ListTile(
-                              leading: Icon(Icons.edit),
-                              title: Text('Edit'),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: ClampingScrollPhysics(),
+                        itemCount: foodItems.length,
+                        itemBuilder: (context, index) {
+                          var foodItem = foodItems[index];
+                          return ListTile(
+                            leading: FoodImage(
+                              foodId: foodItem.foodId,
+                              size: 56.0,
                             ),
-                          ),
-                          const PopupMenuItem<String>(
-                            value: 'delete',
-                            child: ListTile(
-                              leading: Icon(Icons.delete),
-                              title: Text('Delete'),
+                            title: Row(
+                              children: [
+                                // Add category icon or badge here if available
+                                Icon(Icons.category),
+                                SizedBox(width: 8),
+                                Text(
+                                  foodItem.label,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
+                                ),
+                              ],
                             ),
-                          ),
-                        ];
-                      },
-                    ),
-                  );
-                },
-              ),
-            ],
-          );
-        },
-      ),
+                            subtitle: RichText(
+                              text: TextSpan(
+                                style: Theme.of(context).textTheme.bodySmall,
+                                children: [
+                                  TextSpan(
+                                    text:
+                                        'Proteins: ${foodItem.getNutrientDetails("PROCNT")} ',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  WidgetSpan(
+                                    child: SizedBox(width: 8.0),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        'Carbs: ${foodItem.getNutrientDetails("CHOCDF")}',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  WidgetSpan(
+                                    child: SizedBox(width: 8.0),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        'Fats: ${foodItem.getNutrientDetails("FAT")}\n',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            subtitleTextStyle:
+                                Theme.of(context).textTheme.bodySmall,
+                            trailing: PopupMenuButton<String>(
+                              icon: Icon(Icons.more_vert, color: Colors.grey),
+                              onSelected: (String choice) {
+                                if (choice == 'edit') {
+                                  _editNutrientInfo(foodItem);
+                                } else if (choice == 'delete') {
+                                  _deleteFoodItem(foodItem);
+                                }
+                              },
+                              itemBuilder: (BuildContext context) {
+                                return <PopupMenuEntry<String>>[
+                                  const PopupMenuItem<String>(
+                                    value: 'edit',
+                                    child: ListTile(
+                                      leading: Icon(Icons.edit),
+                                      title: Text('Edit'),
+                                    ),
+                                  ),
+                                  const PopupMenuItem<String>(
+                                    value: 'delete',
+                                    child: ListTile(
+                                      leading: Icon(Icons.delete),
+                                      title: Text('Delete'),
+                                    ),
+                                  ),
+                                ];
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final result = await Navigator.push(
@@ -213,9 +243,9 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
       MaterialPageRoute(
         builder: (context) => EditNutrientScreen(
           foodItem: foodItem,
-          onUpdate: () {
+          onUpdate: () async {
             // Implement logic to refresh the food items after updating
-            _getUserFoodItems();
+            await _getUserFoodItems();
           },
         ),
       ),
@@ -228,7 +258,7 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
       await FoodService().deleteUserFoodItem(foodItem, _userId);
 
       // Notify parent screen about the update
-      _getUserFoodItems();
+      await _getUserFoodItems();
     } catch (e) {
       // Handle errors, if any
       print('Error deleting food item: $e');
@@ -251,17 +281,22 @@ class EditNutrientScreen extends StatefulWidget {
 }
 
 class _EditNutrientScreenState extends State<EditNutrientScreen> {
-  TextEditingController proteinController = TextEditingController();
-  TextEditingController carbsController = TextEditingController();
-  TextEditingController fatsController = TextEditingController();
+  late TextEditingController proteinController;
+  late TextEditingController carbsController;
+  late TextEditingController fatsController;
 
   @override
   void initState() {
     super.initState();
     // Initialize controllers with existing values
-    proteinController.text = widget.foodItem.nutrients!['PROCNT'].toString();
-    carbsController.text = widget.foodItem.nutrients!['CHOCDF'].toString();
-    fatsController.text = widget.foodItem.nutrients!['FAT'].toString();
+    proteinController = TextEditingController(
+        text: widget.foodItem.getNutrientDetails("PROCNT").replaceAll("g", ""));
+    carbsController = TextEditingController(
+        text: widget.foodItem
+            .getNutrientDetails("CHOCDF.net")
+            .replaceAll("g", ""));
+    fatsController = TextEditingController(
+        text: widget.foodItem.getNutrientDetails("FAT").replaceAll("g", ""));
   }
 
   @override
@@ -275,19 +310,19 @@ class _EditNutrientScreenState extends State<EditNutrientScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Proteins (g):'),
+            Text('Proteins:'),
             TextField(
               controller: proteinController,
               keyboardType: TextInputType.number,
             ),
             SizedBox(height: 16.0),
-            Text('Carbs (g):'),
+            Text('Carbs:'),
             TextField(
               controller: carbsController,
               keyboardType: TextInputType.number,
             ),
             SizedBox(height: 16.0),
-            Text('Fats (g):'),
+            Text('Fats:'),
             TextField(
               controller: fatsController,
               keyboardType: TextInputType.number,
@@ -309,7 +344,7 @@ class _EditNutrientScreenState extends State<EditNutrientScreen> {
     // Update the nutrient values
     widget.foodItem.nutrients?['PROCNT'] =
         double.tryParse(proteinController.text) ?? 0.0;
-    widget.foodItem.nutrients?['CHOCDF'] =
+    widget.foodItem.nutrients?['CHOCDF.net'] =
         double.tryParse(carbsController.text) ?? 0.0;
     widget.foodItem.nutrients?['FAT'] =
         double.tryParse(fatsController.text) ?? 0.0;

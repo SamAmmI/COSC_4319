@@ -89,8 +89,18 @@ class _SearchFoodToConsumeState extends State<SearchFoodToConsume> {
       return ''; // or any default value
     }
 
+    // Mapping of nutrient keys to custom labels
+    final nutrientLabels = {
+      'ENERC_KCAL': 'Energies',
+      'PROCNT': 'Proteins',
+      'FAT': 'Fats',
+      'CHOCDF': 'Carbohydrates',
+      'FIBTG': 'Total Fiber',
+    };
+
     return nutrients.entries
-        .map((e) => '${searchedItem!.getNutrientDetails(e.key)}: ${e.value}')
+        .map((e) =>
+            '${nutrientLabels[e.key] ?? e.key}: ${FoodItem.formatNutrientValue(e.key, e.value)}g')
         .join('\n');
   }
 

@@ -47,8 +47,18 @@ class SearchFoodState extends State<SearchFood> {
       return 'Nutrient information not available';
     }
 
+    // Mapping of nutrient keys to custom labels
+    final nutrientLabels = {
+      'ENERC_KCAL': 'Energies',
+      'PROCNT': 'Proteins',
+      'FAT': 'Fats',
+      'CHOCDF': 'Carbohydrates',
+      'FIBTG': 'Total Fiber',
+    };
+
     return nutrients.entries
-        .map((e) => '${searchedItem!.getNutrientDetails(e.key)}: ${e.value}')
+        .map((e) =>
+            '${nutrientLabels[e.key] ?? e.key}: ${FoodItem.formatNutrientValue(e.key, e.value)}g')
         .join('\n');
   }
 
