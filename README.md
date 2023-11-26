@@ -6,4 +6,4 @@ Dietary App
     -   Open Terminal
     -   Type 'cd pantree', click enter
     -   Type 'flutter clean', click enter
-    -   Tyoe 'flutter run', click enter
+    -   Type 'flutter run', click enter
