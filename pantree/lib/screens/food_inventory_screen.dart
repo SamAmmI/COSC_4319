@@ -139,38 +139,35 @@ class _FoodInventoryScreenState extends State<FoodInventoryScreen> {
                                   style:
                                       Theme.of(context).textTheme.titleMedium,
                                 ),
+                                Spacer(),
+                                Text(
+                                  'Qty: ${foodItem.quantity}',
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
                               ],
                             ),
-                            subtitle: RichText(
-                              text: TextSpan(
-                                style: Theme.of(context).textTheme.bodySmall,
-                                children: [
-                                  TextSpan(
-                                    text:
-                                        'Proteins: ${foodItem.getNutrientDetails("PROCNT")} ',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  WidgetSpan(
-                                    child: SizedBox(width: 8.0),
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        'Carbs: ${foodItem.getNutrientDetails("CHOCDF")}',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  WidgetSpan(
-                                    child: SizedBox(width: 8.0),
-                                  ),
-                                  TextSpan(
-                                    text:
-                                        'Fats: ${foodItem.getNutrientDetails("FAT")}\n',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Proteins: ${foodItem.getNutrientDetails("PROCNT")}',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 14),
+                                ),
+                                Text(
+                                  'Carbs: ${foodItem.getNutrientDetails("CHOCDF")}',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 14),
+                                ),
+                                Text(
+                                  'Fats: ${foodItem.getNutrientDetails("FAT")}',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 14),
+                                ),
+                              ],
                             ),
                             subtitleTextStyle:
                                 Theme.of(context).textTheme.bodySmall,
@@ -284,6 +281,7 @@ class _EditNutrientScreenState extends State<EditNutrientScreen> {
   late TextEditingController proteinController;
   late TextEditingController carbsController;
   late TextEditingController fatsController;
+  late TextEditingController quantityController;
 
   @override
   void initState() {
@@ -297,6 +295,8 @@ class _EditNutrientScreenState extends State<EditNutrientScreen> {
             .replaceAll("g", ""));
     fatsController = TextEditingController(
         text: widget.foodItem.getNutrientDetails("FAT").replaceAll("g", ""));
+    quantityController =
+        TextEditingController(text: widget.foodItem.quantity.toString());
   }
 
   @override
@@ -328,6 +328,15 @@ class _EditNutrientScreenState extends State<EditNutrientScreen> {
               keyboardType: TextInputType.number,
             ),
             SizedBox(height: 16.0),
+            Text('Quantity:'),
+            TextField(
+              controller: quantityController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                hintText: 'Enter quantity',
+              ),
+            ),
+            SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
                 _updateNutrients();
@@ -349,10 +358,14 @@ class _EditNutrientScreenState extends State<EditNutrientScreen> {
     widget.foodItem.nutrients?['FAT'] =
         double.tryParse(fatsController.text) ?? 0.0;
 
+    // Update the quantity
+    widget.foodItem.quantity =
+        double.tryParse(quantityController.text) ?? widget.foodItem.quantity;
+
     try {
       // Update the food item in Firebase
-      await FoodService()
-          .updateUserFoodItem(widget.foodItem, _userId as String);
+      await FoodService().updateUserFoodItem(
+          widget.foodItem, FirebaseAuth.instance.currentUser!.uid);
 
       // Notify parent screen about the update
       widget.onUpdate();
