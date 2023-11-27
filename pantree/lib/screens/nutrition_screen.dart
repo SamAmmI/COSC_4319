@@ -126,15 +126,13 @@ class NutritionCard extends StatelessWidget {
       dataMap: data,
       animationDuration: Duration(milliseconds: 800),
       chartLegendSpacing: 32,
-      chartRadius:
-          MediaQuery.of(context).size.width / 3.0, // Adjust size as needed
+      chartRadius: MediaQuery.of(context).size.width / 1.5,
       colorList: colorList,
-      initialAngleInDegree: 0,
+      initialAngleInDegree: -90,
       chartType: ChartType.ring,
-      ringStrokeWidth: 20,
+      ringStrokeWidth: 16,
       centerText:
           isGoalExceeded ? "Exceeded\n${exceededAmount.round()} kcal" : "",
-
       legendOptions: LegendOptions(
         showLegends: false,
         legendPosition: LegendPosition.right,
@@ -368,13 +366,13 @@ class _NutritionScreenState extends State<nutrition_screen> {
 
                         // Extract current calorie intake from the data
                         double currentCalories =
-                            (currentConsumption!.totalCalories) ?? 0;
+                            (currentConsumption?.totalCalories) ?? 0;
                         double currentProtein =
-                            (currentConsumption!.totalProteins) ?? 0;
+                            (currentConsumption?.totalProteins) ?? 0;
                         double currentCarbs =
-                            (currentConsumption!.totalCarbs) ?? 0;
+                            (currentConsumption?.totalCarbs) ?? 0;
                         double currentFats =
-                            (currentConsumption!.totalFats) ?? 0;
+                            (currentConsumption?.totalFats) ?? 0;
 
                         // Assuming 'calories' is your daily calorie goal
                         double calorieGoal =
@@ -468,9 +466,7 @@ class _NutritionScreenState extends State<nutrition_screen> {
       ),
 
       drawer: Settings_Drawer(
-        onSettingsTap: () {
-          // Navigate to settings screen (optional: can implement additional logic if needed)
-        },
+        onSettingsTap: () {},
       ),
     );
   }

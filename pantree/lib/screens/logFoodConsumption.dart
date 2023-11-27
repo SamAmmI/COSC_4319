@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:pantree/models/local_user_manager.dart';
 import 'package:pantree/models/user_profile.dart';
 import 'package:pantree/screens/searchFoodToConsume.dart';
-import 'package:pantree/screens/food_inventory_screen.dart';
 import 'package:pantree/services/user_consumption_service.dart';
 
 class LogFoodConsumption extends StatefulWidget {
@@ -15,11 +14,11 @@ class LogFoodConsumption extends StatefulWidget {
 }
 
 class _LogFoodConsumptionState extends State<LogFoodConsumption> {
-  List<String> mealItems = [];
-
   final ConsumptionService consumptionService = ConsumptionService.instance;
-
   UserProfile? userProfile;
+
+  List<DocumentSnapshot> foodInventory =
+      []; // List to hold food inventory items
 
   // USER ATTRIBUTES NEEDED FOR THIS SCREEN
   double? calories;
@@ -28,38 +27,58 @@ class _LogFoodConsumptionState extends State<LogFoodConsumption> {
   double? fat;
   String? firstName;
 
-  void addFoodItemToMeal(String foodItem) {
-    setState(() {
-      mealItems.add(foodItem);
-    });
-  }
-
-  void logMeal(DocumentSnapshot foodItemDoc) async {
+  void logMeal(DocumentSnapshot foodItemDoc, double consumedQuantity) async {
     try {
       String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
       DateTime date = DateTime.now();
-      bool fromInventory =
-          false; // Set to true if the food item is from inventory.
-      double quantity = 1.0; // Set the quantity based on user input.
+      bool fromInventory = true;
 
+      // Log consumption and update totals
       await consumptionService.logConsumptionAndUpdateTotals(
         userId,
         date,
         foodItemDoc,
         fromInventory,
-        quantity,
+        consumedQuantity,
       );
 
-      // Optionally, you can update the UI to reflect the added food item.
-      addFoodItemToMeal(
-          foodItemDoc['name']); // Update the UI with the food item name.
+      // Update the Firestore document for the consumed item
+      await foodItemDoc.reference.update(
+          {'quantity': FieldValue.increment(-consumedQuantity)}).then((_) {
+        // Fetch updated inventory after confirming Firestore update
+        fetchFoodInventory(); // Just call without await
+      }).catchError((error) {
+        print('Error updating Firestore: $error');
+      });
+
+      // Showing a confirmation SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              Text("Logged '${foodItemDoc['label']}' to your consumption log."),
+          duration: Duration(seconds: 3),
+        ),
+      );
     } catch (error) {
-      // Handle any errors that may occur during the logging process.
       print('Error logging meal: $error');
     }
   }
 
-  // WHERE WE FETCH THE PROFILE AND ATTRIBUTES
+  void fetchFoodInventory() async {
+    String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('foodItems')
+        .get()
+        .then((snapshot) {
+      setState(() {
+        foodInventory = snapshot.docs
+          ..sort((a, b) => (a.data())['label'].compareTo((b.data())['label']));
+      });
+    });
+  }
+
   void fetchUserProfile() async {
     final localUserManager = LocalUserManager();
     userProfile = localUserManager.getCachedUser();
@@ -70,11 +89,11 @@ class _LogFoodConsumptionState extends State<LogFoodConsumption> {
       userProfile = localUserManager.getCachedUser();
     }
     if (userProfile != null) {
-      calories = userProfile!.calories;
-      protein = userProfile!.protein;
-      carbs = userProfile!.carbs;
-      fat = userProfile!.fat;
-      firstName = userProfile!.firstName;
+      calories = localUserManager.getUserAttribute('Calories') as double?;
+      protein = localUserManager.getUserAttribute('Protein') as double?;
+      carbs = localUserManager.getUserAttribute('Carbs') as double?;
+      fat = localUserManager.getUserAttribute('Fat') as double?;
+      firstName = localUserManager.getUserAttribute('firstName') as String?;
     }
     setState(() {});
   }
@@ -83,18 +102,14 @@ class _LogFoodConsumptionState extends State<LogFoodConsumption> {
   void initState() {
     super.initState();
     fetchUserProfile();
+    fetchFoodInventory(); // Fetch food inventory on initialization
   }
 
   @override
   Widget build(BuildContext context) {
-    String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Log Meal",
-          style: Theme.of(context).appBarTheme.titleTextStyle,
-        ),
+        title: Text("Log Meal"),
         centerTitle: true,
       ),
       body: Column(
@@ -105,9 +120,10 @@ class _LogFoodConsumptionState extends State<LogFoodConsumption> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => SearchFoodToConsume(
-                    userId: userId,
+                    userId: FirebaseAuth.instance.currentUser?.uid ?? '',
                     onFoodItemSelected: (foodItemDoc) {
-                      logMeal(foodItemDoc as DocumentSnapshot);
+                      logMeal(foodItemDoc as DocumentSnapshot,
+                          1.0); // Assuming 1.0 as consumed quantity for simplicity
                     },
                   ),
                 ),
@@ -115,40 +131,116 @@ class _LogFoodConsumptionState extends State<LogFoodConsumption> {
             },
             child: Text("Search Food Item"),
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => FoodInventoryScreen(
-                    foodItems: [],
-                    onFoodItemSelected: (String foodItem) {
-                      // WHERE YOU NEED TO INVOKE THE FUNCTIONS TO ADJUST INVENTORY ACCORDINGLY
-                    },
-                  ),
-                ),
-              );
-            },
-            child: Text("Import from Food Inventory"),
-          ),
+          // WHERE THE INVENTORY LIST IS DISPLAYED TO THE USER
           Expanded(
             child: ListView.builder(
-              itemCount: mealItems.length,
+              itemCount: foodInventory.length,
               itemBuilder: (context, index) {
+                DocumentSnapshot foodItemDoc = foodInventory[index];
+                var foodData = foodItemDoc.data() as Map<String, dynamic>;
                 return ListTile(
-                  title: Text(mealItems[index]),
+                  leading: foodData['image'] != null
+                      ? Image.network(foodData['image'],
+                          width: 100, height: 100, fit: BoxFit.cover)
+                      : null, // Show an image if the URL exists
+                  title: Text(foodData['label'] ?? 'No Name'),
+                  subtitle: Text('Quantity: ${foodData['quantity']}'),
+                  trailing: IconButton(
+                    icon: Icon(Icons.remove_circle_outline),
+                    onPressed: () {
+                      // Prompt user for consumption quantity
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          final TextEditingController _controller =
+                              TextEditingController();
+                          return AlertDialog(
+                            title: Text('Log Consumption'),
+                            content: TextField(
+                              controller: _controller,
+                              decoration: InputDecoration(
+                                labelText: 'Enter quantity consumed',
+                                hintText: 'e.g., 1',
+                              ),
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text('Cancel'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              TextButton(
+                                child: Text('Log'),
+                                onPressed: () {
+                                  double? consumedQuantity =
+                                      double.tryParse(_controller.text);
+                                  if (consumedQuantity != null &&
+                                      consumedQuantity > 0) {
+                                    logMeal(foodItemDoc, consumedQuantity);
+                                    Navigator.of(context).pop();
+                                  }
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
                 );
               },
             ),
           ),
-          // Display the nutritional information if available
+          // USER GOAL NUTRIENTS DISPLAY
           if (calories != null &&
               protein != null &&
               carbs != null &&
               fat != null)
-            Text(
-              'Nutritional Information:\nCalories: $calories\nProtein: $protein\nCarbs: $carbs\nFat: $fat',
-              style: TextStyle(fontSize: 16),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  text: 'Nutritional Information:\n',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'Calories: ${calories?.toStringAsFixed(0)} kcal\n',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(fontWeight: FontWeight.normal),
+                    ),
+                    TextSpan(
+                      text: 'Protein: ${protein?.toStringAsFixed(2)} g\n',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(fontWeight: FontWeight.normal),
+                    ),
+                    TextSpan(
+                      text: 'Carbs: ${carbs?.toStringAsFixed(2)} g\n',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(fontWeight: FontWeight.normal),
+                    ),
+                    TextSpan(
+                      text: 'Fat: ${fat?.toStringAsFixed(2)} g',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(fontWeight: FontWeight.normal),
+                    ),
+                  ],
+                ),
+              ),
             ),
         ],
       ),

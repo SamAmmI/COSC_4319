@@ -118,107 +118,110 @@ class _DailyConsumptionScreenGraphState
         centerTitle: true,
         elevation: 0,
       ),
-      body: Container(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Container(
-                height: 340,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Theme.of(context).appBarTheme.backgroundColor),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
-                          child: Text(
-                            'Daily Overview',
-                            style: TextStyle(
-                              fontSize: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge
-                                      ?.fontSize ??
-                                  16,
-                              fontWeight: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.fontWeight,
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Container(
+                  height: 340,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Theme.of(context).appBarTheme.backgroundColor),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+                            child: Text(
+                              'Daily Overview',
+                              style: TextStyle(
+                                fontSize: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge
+                                        ?.fontSize ??
+                                    16,
+                                fontWeight: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.fontWeight,
+                              ),
                             ),
-                          ),
-                        )
-                        // here is where you need to add arrow to navigate to other page
-                      ],
-                    ),
-                    Padding(
-                        padding: const EdgeInsets.all(6.0),
-                        child: Container(
-                          height: 270,
-                          width: 345,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color:
-                                Theme.of(context).appBarTheme.backgroundColor ??
-                                    Colors.black ??
-                                    Colors.white,
-                          ),
-                          child: LayoutBuilder(
-                            builder: (BuildContext context,
-                                BoxConstraints constraints) {
-                              return NutrientBarChart(
-                                dataList: nutrientDataList,
-                                selectedIndex: selectedNutrientIndex,
-                              );
-                            }, // Removed Expanded),
-                          ),
-                        ))
-                  ],
-                )),
+                          )
+                          // here is where you need to add arrow to navigate to other page
+                        ],
+                      ),
+                      Padding(
+                          padding: const EdgeInsets.all(6.0),
+                          child: Container(
+                            height: 270,
+                            width: 345,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: Theme.of(context)
+                                      .appBarTheme
+                                      .backgroundColor ??
+                                  Colors.black ??
+                                  Colors.white,
+                            ),
+                            child: LayoutBuilder(
+                              builder: (BuildContext context,
+                                  BoxConstraints constraints) {
+                                return NutrientBarChart(
+                                  dataList: nutrientDataList,
+                                  selectedIndex: selectedNutrientIndex,
+                                );
+                              }, // Removed Expanded),
+                            ),
+                          ))
+                    ],
+                  )),
 
-            //WHERE NUTRITIONAL SUMMARY BEGINS
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(16, 25, 0, 4),
-                  child: Text(
-                    'Nutritional Summary',
-                    style: Theme.of(context).textTheme.bodyLarge,
+              //WHERE NUTRITIONAL SUMMARY BEGINS
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(16, 25, 0, 4),
+                    child: Text(
+                      'Nutritional Summary',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(16, 0, 0, 10),
-                  child: Text(
-                    'Overview of your daily consumption.',
-                    style: Theme.of(context).textTheme.bodySmall,
+                  Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(16, 0, 0, 10),
+                    child: Text(
+                      'Overview of your daily consumption.',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
                   ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    buildNutrientCard(
-                        'Calories',
-                        '${currentConsumption?.totalCalories.toStringAsFixed(0)} kcal',
-                        0),
-                    buildNutrientCard(
-                        'Proteins',
-                        '${currentConsumption?.totalProteins.toStringAsFixed(0)} g',
-                        1),
-                    buildNutrientCard(
-                        'Carbs',
-                        '${currentConsumption?.totalCarbs.toStringAsFixed(0)} g',
-                        2),
-                    buildNutrientCard(
-                        'Fats',
-                        '${currentConsumption?.totalFats.toStringAsFixed(0)} g',
-                        3),
-                  ],
-                ),
-              ],
-            ),
-          ],
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildNutrientCard(
+                          'Calories',
+                          '${currentConsumption?.totalCalories.toStringAsFixed(0)} kcal',
+                          0),
+                      buildNutrientCard(
+                          'Proteins',
+                          '${currentConsumption?.totalProteins.toStringAsFixed(0)} g',
+                          1),
+                      buildNutrientCard(
+                          'Carbs',
+                          '${currentConsumption?.totalCarbs.toStringAsFixed(0)} g',
+                          2),
+                      buildNutrientCard(
+                          'Fats',
+                          '${currentConsumption?.totalFats.toStringAsFixed(0)} g',
+                          3),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
