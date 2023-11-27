@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 
+enum InfoCardIconType {
+  star,
+  schedule,
+  none,
+}
+
 class VerticalInfoCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String info;
   final String imageUrl;
   final double cardWidth;
-  final TextStyle? titleTextStyle;
-  final TextStyle? subtitleTextStyle;
-  final TextStyle? infoTextStyle;
-  final bool showIcon;
+  final TextStyle titleTextStyle;
+  final TextStyle subtitleTextStyle;
+  final TextStyle infoTextStyle;
+  final InfoCardIconType iconType;
   final VoidCallback? onTap;
 
   VerticalInfoCard({
@@ -18,10 +24,11 @@ class VerticalInfoCard extends StatelessWidget {
     required this.info,
     required this.imageUrl,
     this.cardWidth = 200.0,
-    this.titleTextStyle,
-    this.subtitleTextStyle,
-    this.infoTextStyle,
-    this.showIcon = true,
+    this.titleTextStyle =
+        const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+    this.subtitleTextStyle = const TextStyle(fontSize: 14),
+    this.infoTextStyle = const TextStyle(fontSize: 14),
+    this.iconType = InfoCardIconType.star, // Set the default icon type
     this.onTap,
   });
 
@@ -45,8 +52,8 @@ class VerticalInfoCard extends StatelessWidget {
             BoxShadow(
               color: Colors.black.withOpacity(0.6),
               offset: Offset(0.0, 10.0),
-              blurRadius: 10.0,
-              spreadRadius: -6.0,
+              blurRadius: 4.0,
+              spreadRadius: -8.0,
             ),
           ],
           image: DecorationImage(
@@ -59,19 +66,19 @@ class VerticalInfoCard extends StatelessWidget {
           ),
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
               child: Text(
                 title,
-                style: titleTextStyle ?? theme.textTheme.titleMedium,
+                style: titleTextStyle,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
                 textAlign: TextAlign.center,
               ),
             ),
-            if (showIcon)
+            if (iconType != InfoCardIconType.none)
               Container(
                 padding: EdgeInsets.all(5),
                 margin: EdgeInsets.all(10),
@@ -82,13 +89,14 @@ class VerticalInfoCard extends StatelessWidget {
                 child: Row(
                   children: [
                     Icon(
-                      Icons.star,
+                      iconType == InfoCardIconType.star
+                          ? Icons.star
+                          : Icons.schedule,
                       color: Colors.yellow,
                       size: 18,
                     ),
                     SizedBox(width: 7),
-                    Text(info,
-                        style: infoTextStyle ?? theme.textTheme.bodyLarge),
+                    Text(info, style: infoTextStyle),
                   ],
                 ),
               ),
@@ -99,18 +107,7 @@ class VerticalInfoCard extends StatelessWidget {
                 color: cardBackgroundColor.withOpacity(0.4),
                 borderRadius: BorderRadius.circular(15),
               ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.schedule,
-                    color: Colors.yellow,
-                    size: 18,
-                  ),
-                  SizedBox(width: 7),
-                  Text(subtitle,
-                      style: subtitleTextStyle ?? theme.textTheme.bodyLarge),
-                ],
-              ),
+              child: Text(subtitle, style: subtitleTextStyle),
             ),
           ],
         ),
