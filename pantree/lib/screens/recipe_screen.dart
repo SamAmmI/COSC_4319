@@ -116,11 +116,6 @@ class _recipeScreenState extends State<recipe_screen> {
             Container(
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [
-                Color.fromARGB(255, 255, 255, 255),
-                Color.fromARGB(255, 255, 255, 255),
-              ])),
             ),
             SingleChildScrollView(
               child: Container(
@@ -134,16 +129,10 @@ class _recipeScreenState extends State<recipe_screen> {
                           : MainAxisAlignment.center,
                       children: <Widget>[
                         Text("PanTree ",
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                                color: const Color.fromARGB(255, 0, 0, 0))),
+                            style: Theme.of(context).textTheme.titleLarge),
                         Text(
                           "Recipes Search",
-                          style: TextStyle(
-                              color: Color.fromARGB(255, 20, 155, 15),
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500),
+                          style: Theme.of(context).textTheme.titleLarge
                         )
                       ],
                     ),
@@ -152,7 +141,7 @@ class _recipeScreenState extends State<recipe_screen> {
                     ),
                     Text(
                       "Click the search icons below for suggested recipes",
-                      style: TextStyle(fontSize: 20, color: const Color.fromARGB(255, 0, 0, 0)),
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     SizedBox(
                       height: 8,
@@ -178,14 +167,11 @@ class _recipeScreenState extends State<recipe_screen> {
                                 children: <Widget>[
                                 Icon(
                                   Icons.search,
-                                  color: const Color.fromARGB(255, 0, 0, 0),
                                 ),
                                 SizedBox(width: 1), // You can adjust this value as needed
                               Text(
                               'Individual Search',
-                              style: TextStyle(
-                              color: const Color.fromARGB(255, 0, 0, 0),
-                                ),
+                              style: Theme.of(context).textTheme.bodyMedium
                               ),
                             ],
                           ),
@@ -203,14 +189,11 @@ class _recipeScreenState extends State<recipe_screen> {
                                 children: <Widget>[
                                 Icon(
                                   Icons.search,
-                                  color: const Color.fromARGB(255, 0, 0, 0),
                                 ),
                                 SizedBox(width: 1), // You can adjust this value as needed
                               Text(
                               'Grouped Search',
-                              style: TextStyle(
-                              color: const Color.fromARGB(255, 0, 0, 0),
-                                ),
+                              style: Theme.of(context).textTheme.bodyMedium
                               ),
                             ],
                           ),
@@ -226,7 +209,6 @@ class _recipeScreenState extends State<recipe_screen> {
                             child: Container(
                               child: Icon(
                                 Icons.refresh,
-                                color: const Color.fromARGB(255, 0, 0, 0),
                               ),
                             ),
                           )
