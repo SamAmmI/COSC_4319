@@ -62,9 +62,7 @@ class _WeightTrackState extends State<WeightTrack> {
 
   Future<void> _getUserWeightLog() async{
     List<WeightData> hold = await getUserWeightLog();
-    for(var i in hold){
-      print("i " + i.weight.toString());
-    }
+    
     setState(() {
       data = hold;
     });

@@ -1,8 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pantree/components/button.dart';
+import 'package:pantree/models/local_user_manager.dart';
+import 'package:pantree/models/user_consumption_model.dart';
+import 'package:pantree/models/user_profile.dart';
 import 'package:pantree/screens/add_food_screen.dart';
+import 'package:pantree/screens/logFoodConsumption.dart';
 import 'package:pantree/screens/search_food.dart';
+import 'package:pantree/services/user_consumption_service.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
@@ -14,30 +19,62 @@ class NutriTrack extends StatefulWidget {
 }
 
 class _NutriTrackState extends State<NutriTrack> {
-  String? userEmail;
-  @override
-  void initState() {
-    // TODO: implement initState
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      setState(() {
-        userEmail = user.email?.split('@').first;
-      });
-    }
-    super.initState();
-    getEatenCals();
-  }
-
-  Map<String, double> eatenMacros = {"Carbs": 100, "Fats": 50, "Proteins": 130};
-
+  UserProfile? userProfile;
+  UserConsumption? currentConsumption;
+  Map<String, double> eatenMacros = {
+    "Carbs": 0.0,
+    "Fats": 0.0,
+    "Proteins": 0.0
+  };
   Map<String, double> allocatedMacros = {
-    "Carbs": 150,
-    "Fats": 75,
-    "Proteins": 100,
+    "Carbs": 100,
+    "Fats": 100,
+    "Proteins": 100
   };
 
   late double allocatedCals;
-  late int diff;
+  late double diff;
+  @override
+  void initState() {
+    // TODO: implement initState
+    fetchCurrentConsumption();
+    fetchUserProfile();
+
+  }
+
+  Future<void> fetchCurrentConsumption() async {
+    String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    try{
+      DateTime currentDate = DateTime.now();
+      var consumptionData = await ConsumptionService.instance.getUserConsumptionData(uid, currentDate);
+      setState(() {
+        if(consumptionData.totalCalories != 0.0){
+          eatenMacros["Carbs"] = consumptionData.totalCarbs;
+          eatenMacros["Fats"] = consumptionData.totalFats;
+          eatenMacros["Proteins"] = consumptionData.totalProteins;
+        }
+      });
+    }catch (e){
+      print('Error fetching consumption data: $e');
+    }
+  }
+
+  void fetchUserProfile() async {
+    final localUserManager = LocalUserManager();
+    userProfile = localUserManager.getCachedUser();
+    if(userProfile == null){
+      String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+      await localUserManager.fetchAndUpdateUser(uid);
+      userProfile = localUserManager.getCachedUser();
+    }
+
+    if(userProfile != null){
+      allocatedMacros["Carbs"] = localUserManager.getUserAttribute("Carbs") as double;
+      allocatedMacros["Fats"] = localUserManager.getUserAttribute("Fats") as double;
+      allocatedMacros["Proteins"] = localUserManager.getUserAttribute("Proteins") as double;
+      allocatedCals = localUserManager.getUserAttribute("Calories") as double;
+    }
+  }
 
   double getEatenCals() {
     return (eatenMacros["Carbs"]! + eatenMacros["Proteins"]!) * 4 +
@@ -52,9 +89,9 @@ class _NutriTrackState extends State<NutriTrack> {
 
   String remainingMacros(String macro) {
     if (macro == "Calories") {
-      diff = (getAllocatedCals() - getEatenCals()).toInt();
+      diff = (getAllocatedCals() - getEatenCals());
     } else {
-      diff = (allocatedMacros[macro]! - eatenMacros[macro]!).toInt();
+      diff = (allocatedMacros[macro]! - eatenMacros[macro]!);
     }
 
     if (diff >= 0) {
@@ -153,7 +190,19 @@ class _NutriTrackState extends State<NutriTrack> {
         ]),
         Padding(
             padding: const EdgeInsets.fromLTRB(15, 20, 15, 15),
-            child: MyButton(onTap: newFood, text: "Log New Food"))
+            child: MyButton(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                      const LogFoodConsumption(),
+                  ),
+                );
+              }, 
+              text: "Log New Food"
+            )
+        )
       ]),
     );
   }

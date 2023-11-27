@@ -44,7 +44,7 @@ class _AuthPageState extends State<AuthPage> {
     print('Selected Food Item: $foodItem');
   }
 
-  PersistentTabController controller = PersistentTabController(initialIndex: 3);
+  PersistentTabController controller = PersistentTabController(initialIndex: 0);
   List<Widget> _buildScreens() {
     return [
       FoodInventoryScreen(
