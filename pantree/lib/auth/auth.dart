@@ -4,6 +4,7 @@ import 'package:pantree/auth/login_or_register.dart';
 import 'package:pantree/models/food_item.dart';
 import 'package:pantree/screens/food_inventory_screen.dart';
 import 'package:pantree/screens/initial_registration.dart';
+import 'package:pantree/screens/saved_recipes.dart';
 import 'package:pantree/services/foodService.dart'; // Import FoodService to fetch user-specific food items
 import 'package:pantree/services/user_service.dart';
 import 'package:pantree/models/user_profile.dart';
@@ -50,6 +51,7 @@ class _AuthPageState extends State<AuthPage> {
       FoodInventoryScreen(
           foodItems: [], onFoodItemSelected: _onFoodItemSelected),
       recipe_screen(),
+      //SavedRecipes(),
       nutrition_screen(),
       WeightTrack(),
       settings_screen()
@@ -68,6 +70,11 @@ class _AuthPageState extends State<AuthPage> {
           title: "Recipes",
           activeColorPrimary: Theme.of(context).colorScheme.primary,
           inactiveColorPrimary: Theme.of(context).colorScheme.secondary),
+      /*PersistentBottomNavBarItem(
+          icon: Icon(Icons.edit_note),
+          title: "Saved Recipes",
+          activeColorPrimary: Theme.of(context).colorScheme.primary,
+          inactiveColorPrimary: Theme.of(context).colorScheme.secondary),*/
       PersistentBottomNavBarItem(
           icon: Icon(Icons.food_bank),
           title: "Nutrition",
