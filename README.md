@@ -5,7 +5,7 @@ Daniel Warren \
 Kevin Williams \
 Jonathan Santiago \
 PanTree \
-Food Tracking & Nutrition App \
+Food Tracking & Nutrition App
 
  # Instructions to Run App
     -   Start Emulator
