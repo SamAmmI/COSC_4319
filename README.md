@@ -1,5 +1,10 @@
 # COSC_4319
-Pantree
+Group 5
+Samuel Hernandez
+Daniel Warren
+Kevin Williams
+Jonathan Santiago
+PanTree
 Food Tracking & Nutrition App
 
  # Instructions to Run App
