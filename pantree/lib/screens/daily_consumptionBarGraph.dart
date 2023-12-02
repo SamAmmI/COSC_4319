@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/src/scheduler/ticker.dart';
 import 'package:pantree/models/local_user_manager.dart';
 import 'package:pantree/models/user_profile.dart';
 import 'package:pantree/services/user_consumption_service.dart';
@@ -117,107 +118,110 @@ class _DailyConsumptionScreenGraphState
         centerTitle: true,
         elevation: 0,
       ),
-      body: Container(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Container(
-                height: 340,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Theme.of(context).appBarTheme.backgroundColor),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
-                          child: Text(
-                            'Daily Overview',
-                            style: TextStyle(
-                              fontSize: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge
-                                      ?.fontSize ??
-                                  16,
-                              fontWeight: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.fontWeight,
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Container(
+                  height: 340,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Theme.of(context).appBarTheme.backgroundColor),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+                            child: Text(
+                              'Daily Overview',
+                              style: TextStyle(
+                                fontSize: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge
+                                        ?.fontSize ??
+                                    16,
+                                fontWeight: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.fontWeight,
+                              ),
                             ),
-                          ),
-                        )
-                        // here is where you need to add arrow to navigate to other page
-                      ],
-                    ),
-                    Padding(
-                        padding: const EdgeInsets.all(6.0),
-                        child: Container(
-                          height: 270,
-                          width: 345,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color:
-                                Theme.of(context).appBarTheme.backgroundColor ??
-                                    Colors.black ??
-                                    Colors.white,
-                          ),
-                          child: LayoutBuilder(
-                            builder: (BuildContext context,
-                                BoxConstraints constraints) {
-                              return NutrientBarChart(
-                                dataList: nutrientDataList,
-                                selectedIndex: selectedNutrientIndex,
-                              );
-                            }, // Removed Expanded),
-                          ),
-                        ))
-                  ],
-                )),
+                          )
+                          // here is where you need to add arrow to navigate to other page
+                        ],
+                      ),
+                      Padding(
+                          padding: const EdgeInsets.all(6.0),
+                          child: Container(
+                            height: 270,
+                            width: 345,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: Theme.of(context)
+                                      .appBarTheme
+                                      .backgroundColor ??
+                                  Colors.black ??
+                                  Colors.white,
+                            ),
+                            child: LayoutBuilder(
+                              builder: (BuildContext context,
+                                  BoxConstraints constraints) {
+                                return NutrientBarChart(
+                                  dataList: nutrientDataList,
+                                  selectedIndex: selectedNutrientIndex,
+                                );
+                              }, // Removed Expanded),
+                            ),
+                          ))
+                    ],
+                  )),
 
-            //WHERE NUTRITIONAL SUMMARY BEGINS
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(16, 25, 0, 4),
-                  child: Text(
-                    'Nutritional Summary',
-                    style: Theme.of(context).textTheme.bodyLarge,
+              //WHERE NUTRITIONAL SUMMARY BEGINS
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(16, 25, 0, 4),
+                    child: Text(
+                      'Nutritional Summary',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(16, 0, 0, 10),
-                  child: Text(
-                    'Overview of your daily consumption.',
-                    style: Theme.of(context).textTheme.bodySmall,
+                  Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(16, 0, 0, 10),
+                    child: Text(
+                      'Overview of your daily consumption.',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
                   ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    buildNutrientCard(
-                        'Calories',
-                        '${currentConsumption?.totalCalories.toStringAsFixed(0)} kcal',
-                        0),
-                    buildNutrientCard(
-                        'Proteins',
-                        '${currentConsumption?.totalProteins.toStringAsFixed(0)} g',
-                        1),
-                    buildNutrientCard(
-                        'Carbs',
-                        '${currentConsumption?.totalCarbs.toStringAsFixed(0)} g',
-                        2),
-                    buildNutrientCard(
-                        'Fats',
-                        '${currentConsumption?.totalFats.toStringAsFixed(0)} g',
-                        3),
-                  ],
-                ),
-              ],
-            ),
-          ],
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildNutrientCard(
+                          'Calories',
+                          '${currentConsumption?.totalCalories.toStringAsFixed(0)} kcal',
+                          0),
+                      buildNutrientCard(
+                          'Proteins',
+                          '${currentConsumption?.totalProteins.toStringAsFixed(0)} g',
+                          1),
+                      buildNutrientCard(
+                          'Carbs',
+                          '${currentConsumption?.totalCarbs.toStringAsFixed(0)} g',
+                          2),
+                      buildNutrientCard(
+                          'Fats',
+                          '${currentConsumption?.totalFats.toStringAsFixed(0)} g',
+                          3),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -301,8 +305,27 @@ class NutrientBarChart extends StatefulWidget {
   _NutrientBarChartState createState() => _NutrientBarChartState();
 }
 
-class _NutrientBarChartState extends State<NutrientBarChart> {
+class _NutrientBarChartState extends State<NutrientBarChart>
+    implements TickerProvider {
   int? selectedNutrientIndex;
+  late AnimationController animationController;
+  final Curve curve = Curves.easeInOut;
+  final Tween<double> barTween = Tween<double>(begin: 0.0, end: 1.0);
+
+  @override
+  void initState() {
+    super.initState();
+    animationController = AnimationController(
+      duration: Duration(seconds: 1), // Adjust the duration as needed
+      vsync: this,
+    );
+
+    animationController.addListener(() {
+      setState(() {});
+    });
+
+    animationController.forward();
+  }
 
   double calculateMaxY() {
     double maxValue = 0;
@@ -391,7 +414,8 @@ class _NutrientBarChartState extends State<NutrientBarChart> {
                   x: index,
                   barRods: [
                     BarChartRodData(
-                      toY: data.consumption,
+                      toY: data.consumption *
+                          barTween.evaluate(animationController),
                       color: Colors.blue,
                       width: 16,
                       borderRadius: BorderRadius.only(
@@ -402,7 +426,7 @@ class _NutrientBarChartState extends State<NutrientBarChart> {
                       ),
                     ),
                     BarChartRodData(
-                      toY: data.goal,
+                      toY: data.goal * barTween.evaluate(animationController),
                       color: Colors.green,
                       width: 16,
                       borderRadius: BorderRadius.only(
@@ -422,5 +446,10 @@ class _NutrientBarChartState extends State<NutrientBarChart> {
             .toList(),
       ),
     );
+  }
+
+  @override
+  Ticker createTicker(TickerCallback onTick) {
+    return Ticker(onTick);
   }
 }

@@ -83,11 +83,39 @@ class ConsumptionService {
           SetOptions(merge: true));
     });
 
-    // If the item is from inventory, reduce its quantity
+    // If the item is from inventory, reduce its quantity and increment consumption count
     if (fromInventory) {
-      for (int i = 0; i < quantity; i++) {
-        await foodService.consumedFoodItem(foodItemDoc.id, userId, 1);
-      }
+      DocumentReference userFoodItemRef = _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('foodItems')
+          .doc(foodItemDoc.id);
+
+      await _firestore.runTransaction((transaction) async {
+        DocumentSnapshot userFoodItemSnapshot =
+            await transaction.get(userFoodItemRef);
+
+        var userFoodItemData =
+            userFoodItemSnapshot.data() as Map<String, dynamic>?;
+
+        // Retrieve the current quantity and consumption count
+        double currentQuantity = userFoodItemData?['quantity']?.toDouble() ?? 0;
+        int currentConsumptionCount =
+            userFoodItemData?['consumptionCount']?.toInt() ?? 0;
+
+        // Increment the consumption count by the quantity consumed
+        currentConsumptionCount += quantity.toInt();
+
+        transaction.update(userFoodItemRef, {
+          'consumptionCount': currentConsumptionCount,
+        });
+
+        // reduce quantitiy
+        for (int i = 0; i < quantity; i++) {
+          await foodService.consumedFoodItem(foodItemDoc.id, userId, 1);
+        }
+        ;
+      });
     }
   }
 

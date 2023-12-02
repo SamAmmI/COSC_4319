@@ -39,22 +39,22 @@ class _NutriTrackState extends State<NutriTrack> {
     // TODO: implement initState
     fetchCurrentConsumption();
     fetchUserProfile();
-
   }
 
   Future<void> fetchCurrentConsumption() async {
     String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-    try{
+    try {
       DateTime currentDate = DateTime.now();
-      var consumptionData = await ConsumptionService.instance.getUserConsumptionData(uid, currentDate);
+      var consumptionData = await ConsumptionService.instance
+          .getUserConsumptionData(uid, currentDate);
       setState(() {
-        if(consumptionData.totalCalories != 0.0){
+        if (consumptionData.totalCalories != 0.0) {
           eatenMacros["Carbs"] = consumptionData.totalCarbs;
           eatenMacros["Fats"] = consumptionData.totalFats;
           eatenMacros["Proteins"] = consumptionData.totalProteins;
         }
       });
-    }catch (e){
+    } catch (e) {
       print('Error fetching consumption data: $e');
     }
   }
@@ -62,16 +62,19 @@ class _NutriTrackState extends State<NutriTrack> {
   void fetchUserProfile() async {
     final localUserManager = LocalUserManager();
     userProfile = localUserManager.getCachedUser();
-    if(userProfile == null){
+    if (userProfile == null) {
       String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
       await localUserManager.fetchAndUpdateUser(uid);
       userProfile = localUserManager.getCachedUser();
     }
 
-    if(userProfile != null){
-      allocatedMacros["Carbs"] = localUserManager.getUserAttribute("Carbs") as double;
-      allocatedMacros["Fats"] = localUserManager.getUserAttribute("Fats") as double;
-      allocatedMacros["Proteins"] = localUserManager.getUserAttribute("Proteins") as double;
+    if (userProfile != null) {
+      allocatedMacros["Carbs"] =
+          localUserManager.getUserAttribute("Carbs") as double;
+      allocatedMacros["Fats"] =
+          localUserManager.getUserAttribute("Fats") as double;
+      allocatedMacros["Proteins"] =
+          localUserManager.getUserAttribute("Proteins") as double;
       allocatedCals = localUserManager.getUserAttribute("Calories") as double;
     }
   }
@@ -89,15 +92,14 @@ class _NutriTrackState extends State<NutriTrack> {
 
   String remainingMacros(String macro) {
     if (macro == "Calories") {
-      diff = (getAllocatedCals() - getEatenCals());
+      diff = (getAllocatedCals() - getEatenCals()).roundToDouble();
     } else {
       diff = (allocatedMacros[macro]! - eatenMacros[macro]!);
     }
-
     if (diff >= 0) {
-      return "$macro: $diff $macro Remaining";
+      return "$macro: ${diff.toStringAsFixed(2)} $macro Remaining";
     } else {
-      return "$macro: ${diff.abs()} $macro Over Allocated";
+      return "$macro: ${diff.abs().toStringAsFixed(2)} $macro Over Allocated";
     }
   }
 
@@ -115,7 +117,7 @@ class _NutriTrackState extends State<NutriTrack> {
     if (macro != "Calories") {
       percent = eatenMacros[macro]! / allocatedMacros[macro]!;
     } else {
-      percent = getEatenCals() / getAllocatedCals();
+      percent = (getEatenCals() / getAllocatedCals()).roundToDouble();
     }
 
     if (percent > 1) {
@@ -191,18 +193,15 @@ class _NutriTrackState extends State<NutriTrack> {
         Padding(
             padding: const EdgeInsets.fromLTRB(15, 20, 15, 15),
             child: MyButton(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                      const LogFoodConsumption(),
-                  ),
-                );
-              }, 
-              text: "Log New Food"
-            )
-        )
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LogFoodConsumption(),
+                    ),
+                  );
+                },
+                text: "Log New Food"))
       ]),
     );
   }

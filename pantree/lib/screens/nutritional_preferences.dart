@@ -1,22 +1,3 @@
-/*import 'package:flutter/material.dart';
-
-class nutritional_preferences extends StatelessWidget {
-  const nutritional_preferences({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Nutrional preferences"),
-        centerTitle: true,
-      ),
-      body: const Center(
-        child: Text("Here you can adjust your nutritional preferences"),
-      ),
-    );
-  }
-}*/
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pantree/models/user_profile.dart';
@@ -84,7 +65,17 @@ class _nutritional_preferencesState extends State<nutritional_preferences> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Macro Adjustment Screen"),
+        title: Text(
+          "Macro-Nutrients",
+          style: Theme.of(context).appBarTheme.titleTextStyle,
+        ),
+        centerTitle: true,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.info_outline),
+            onPressed: () => showInfoDialog(context),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(
@@ -151,6 +142,73 @@ class _nutritional_preferencesState extends State<nutritional_preferences> {
           ],
         ),
       ),
+    );
+  }
+
+  void showInfoDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Macro Calculations Explained'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Your macros are calculated based on:',
+                    style: Theme.of(context).textTheme.bodyMedium),
+                SizedBox(height: 8),
+                RichText(
+                  text: TextSpan(
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: '• BMR (Basal Metabolic Rate): ',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      TextSpan(
+                          text:
+                              'The number of calories your body needs to perform basic life-sustaining functions. It helps estimate daily calorie needs.'),
+                    ],
+                  ),
+                ),
+                RichText(
+                  text: TextSpan(
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: '• TDEE (Total Daily Energy Expenditure): ',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      TextSpan(
+                          text:
+                              'Your BMR adjusted for activity level. It represents total calories burned in a day, crucial for setting macro goals.'),
+                    ],
+                  ),
+                ),
+                RichText(
+                  text: TextSpan(
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: '• Macros Distribution: ',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      TextSpan(
+                          text:
+                              'Based on TDEE, carbs, proteins, and fats are proportioned to meet your dietary goals.'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

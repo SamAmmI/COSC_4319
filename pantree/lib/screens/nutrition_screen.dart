@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:pantree/components/settings_drawer.dart';
+import 'package:pantree/models/user_consumption_model.dart';
 import 'package:pantree/models/user_profile.dart';
 import 'package:pantree/screens/daily_consumptionBarGraph.dart';
 import 'package:pantree/screens/logFoodConsumption.dart';
-import 'package:pantree/screens/log_food_screen.dart';
 import 'package:pantree/screens/nutritional_preferences.dart';
 import 'package:pantree/screens/daily_consumption.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pantree/models/local_user_manager.dart';
-import 'package:pantree/components/info_card1.dart';
 import 'package:pantree/components/vertical_info_card.dart';
 import 'package:pantree/services/user_consumption_service.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 class NutritionCard extends StatelessWidget {
   final Map<String, double>? nutritionalData;
+  final double? currentCalories;
   final double? calories;
   final double? protein;
   final double? carbs;
@@ -24,6 +24,7 @@ class NutritionCard extends StatelessWidget {
   NutritionCard({
     Key? key,
     this.nutritionalData,
+    this.currentCalories,
     this.calories,
     this.protein,
     this.carbs,
@@ -36,7 +37,7 @@ class NutritionCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        elevation: 4.0,
+        elevation: 2.0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -54,16 +55,42 @@ class NutritionCard extends StatelessWidget {
               if (nutritionalData != null)
                 Expanded(
                   flex: 2,
-                  child: buildPieChart(nutritionalData!),
+                  child: buildPieChart(context, currentCalories ?? 0,
+                      calories ?? 2000), // Updated line
                 ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Calories Goal: ${calories?.round() ?? 'N/A'}'),
-                  Text('Proteins: ${protein?.round() ?? 'N/A'} g'),
-                  Text('Carbs: ${carbs?.round() ?? 'N/A'} g'),
-                  Text('Fats: ${fat?.round() ?? 'N/A'} g'),
+                  Text('Current Consumption',
+                      style: TextStyle(
+                          fontSize: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.fontSize ??
+                              18,
+                          fontWeight: FontWeight.bold)),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 4),
+                    height: 2,
+                    color: Colors.black,
+                  ),
+                  Text(
+                    'Calories: ${currentCalories?.round() ?? 'N/A'} kcal',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  Text(
+                    'Proteins: ${protein?.round() ?? 'N/A'} g',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  Text(
+                    'Carbs: ${carbs?.round() ?? 'N/A'} g',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  Text(
+                    'Fats: ${fat?.round() ?? 'N/A'} g',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                 ],
               ),
             ],
@@ -73,39 +100,51 @@ class NutritionCard extends StatelessWidget {
     );
   }
 
-  Widget buildPieChart(Map<String, double> data) {
-    List<Color> colorList = [
-      Colors.blue,
-      Colors.green,
-      Colors.orange,
-      Colors.red
-    ]; // Customize your colors
+  Widget buildPieChart(
+      BuildContext context, double currentCalories, double calorieGoal) {
+    double remainingCalories = calorieGoal - currentCalories;
+    bool isGoalExceeded = remainingCalories < 0;
 
-    double fixedChartRadius = 200;
+    Color textColor = Theme.of(context).brightness == Brightness.dark
+        ? Colors.white
+        : Colors.black;
 
-    return Container(
-      width: 300,
-      height: 160,
-      child: PieChart(
-        dataMap: data,
-        animationDuration: Duration(milliseconds: 800),
-        chartLegendSpacing: 32,
-        chartRadius: fixedChartRadius,
-        colorList: colorList,
-        initialAngleInDegree: 0,
-        chartType: ChartType.ring,
-        ringStrokeWidth: 28,
-        centerText: "Calories",
-        legendOptions: LegendOptions(
-          showLegends: false,
-          legendPosition: LegendPosition.right,
-        ),
-        chartValuesOptions: ChartValuesOptions(
-          showChartValueBackground: true,
-          showChartValues: true,
-          showChartValuesInPercentage: false,
-          showChartValuesOutside: false,
-        ),
+    double exceededAmount = isGoalExceeded ? -remainingCalories : 0.0;
+
+    Map<String, double> data = {
+      "Consumed": currentCalories.round().roundToDouble(),
+      "Remaining":
+          isGoalExceeded ? 0 : remainingCalories.round().roundToDouble(),
+      "Exceeded": isGoalExceeded ? exceededAmount : 0,
+    };
+
+    List<Color> colorList = isGoalExceeded
+        ? [Colors.red, Colors.grey]
+        : [Colors.green, Colors.grey];
+
+    return PieChart(
+      dataMap: data,
+      animationDuration: Duration(milliseconds: 800),
+      chartLegendSpacing: 32,
+      chartRadius: MediaQuery.of(context).size.width / 1.5,
+      colorList: colorList,
+      initialAngleInDegree: -90,
+      chartType: ChartType.ring,
+      ringStrokeWidth: 16,
+      centerText:
+          isGoalExceeded ? "Exceeded\n${exceededAmount.round()} kcal" : "",
+      legendOptions: LegendOptions(
+        showLegends: false,
+        legendPosition: LegendPosition.right,
+      ),
+      chartValuesOptions: ChartValuesOptions(
+        showChartValueBackground: false,
+        showChartValues: !isGoalExceeded,
+        showChartValuesInPercentage: false,
+        showChartValuesOutside: false,
+        decimalPlaces: 0,
+        chartValueStyle: TextStyle(
+            color: textColor, fontWeight: FontWeight.normal, fontSize: 12),
       ),
     );
   }
@@ -121,6 +160,7 @@ class nutrition_screen extends StatefulWidget {
 class _NutritionScreenState extends State<nutrition_screen> {
   String? userEmail;
   UserProfile? userProfile;
+  UserConsumption? currentConsumption;
   ConsumptionService? consumptionService;
 
   // USER ATTRIBUTES NEEDED FOR THIS SCREEN
@@ -130,11 +170,31 @@ class _NutritionScreenState extends State<nutrition_screen> {
   double? fat;
   String? firstName;
   double? caloriesConsumed;
+  double? proteinConsumed;
+  double? carbsConsumed;
+  double? fatsConsumed;
 
   @override
   void initState() {
     super.initState();
     fetchUserProfile();
+    fetchCurrentConsumption();
+  }
+
+  // WHERE WE FETCH THE USER CURRENT CONSUMPTION
+  Future<void> fetchCurrentConsumption() async {
+    String userID = FirebaseAuth.instance.currentUser?.uid ?? '';
+    try {
+      DateTime currentDate = DateTime.now();
+      var consumptionData = await ConsumptionService.instance
+          .getUserConsumptionData(userID, currentDate);
+      print('Fetched Data: $consumptionData');
+      setState(() {
+        currentConsumption = consumptionData;
+      });
+    } catch (e) {
+      print('Error fetching consumption data: $e');
+    }
   }
 
   // WHERE WE FETCH THE PROFILE AND ATTRIBUTES
@@ -159,6 +219,17 @@ class _NutritionScreenState extends State<nutrition_screen> {
 
   @override
   Widget build(BuildContext context) {
+    TextStyle nutrientNameStyle = Theme.of(context)
+        .textTheme
+        .bodyLarge!
+        .copyWith(fontSize: 16, fontWeight: FontWeight.bold);
+
+    TextStyle nutrientValueStyle =
+        Theme.of(context).textTheme.bodyLarge!.copyWith(
+              fontSize: 16,
+              fontWeight: FontWeight.normal,
+            );
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -190,26 +261,87 @@ class _NutritionScreenState extends State<nutrition_screen> {
               child: Column(
                 children: [
                   // CARD 1 USER CONSUMPTION DETAILS
-                  Container(
-                    width: 400,
-                    child: InfoCard(
-                      title: 'Calories Goal: ${calories?.round() ?? 'N/A'}',
-                      subtitle: 'Proteins: ${protein?.round() ?? 'N/A'}\n'
-                          'Carbs: ${carbs?.round() ?? 'N/A'}\n'
-                          'Fats: ${fat?.round() ?? 'N/A'}',
-                      info: '',
-                      imageUrl: '',
-                      cardHeight: 180.0,
-                      showIcon: false,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const NutriTrack(),
+                  SingleChildScrollView(
+                    child: Column(children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const NutriTrack(),
+                            ),
+                          );
+                        },
+                        child: Card(
+                          color:
+                              Theme.of(context).appBarTheme.backgroundColor ??
+                                  Colors.black ??
+                                  Colors.white,
+                          elevation: 2.0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
                           ),
-                        );
-                      },
-                    ),
+                          child: Container(
+                            padding: EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Generated Goals by the App',
+                                  style: nutrientValueStyle.copyWith(
+                                      fontSize: 16), // Adjust style as needed
+                                ),
+                                Divider(),
+                                RichText(
+                                  text: TextSpan(
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge!
+                                        .copyWith(fontSize: 18),
+                                    children: [
+                                      TextSpan(
+                                        text: 'Calories: ',
+                                        style: nutrientNameStyle,
+                                      ),
+                                      TextSpan(
+                                        text:
+                                            '${calories?.round() ?? 'N/A'} kcal\n',
+                                        style: nutrientValueStyle,
+                                      ),
+                                      TextSpan(
+                                        text: 'Proteins: ',
+                                        style: nutrientNameStyle,
+                                      ),
+                                      TextSpan(
+                                        text:
+                                            '${protein?.round() ?? 'N/A'} g\n',
+                                        style: nutrientValueStyle,
+                                      ),
+                                      TextSpan(
+                                        text: 'Carbs: ',
+                                        style: nutrientNameStyle,
+                                      ),
+                                      TextSpan(
+                                        text: '${carbs?.round() ?? 'N/A'} g\n',
+                                        style: nutrientValueStyle,
+                                      ),
+                                      TextSpan(
+                                        text: 'Fats: ',
+                                        style: nutrientNameStyle,
+                                      ),
+                                      TextSpan(
+                                        text: '${fat?.round() ?? 'N/A'} g',
+                                        style: nutrientValueStyle,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      )
+                    ]),
                   ),
                   //CARD 2 IMPLEMENTING USING NUTRITION CARD
                   Container(
@@ -232,13 +364,28 @@ class _NutritionScreenState extends State<nutrition_screen> {
                           return Text('No nutritional data available');
                         }
 
-                        // CARD 3 CREATE THE NUTRITION CARD WITH THE SAVED DATA
+                        // Extract current calorie intake from the data
+                        double currentCalories =
+                            (currentConsumption?.totalCalories) ?? 0;
+                        double currentProtein =
+                            (currentConsumption?.totalProteins) ?? 0;
+                        double currentCarbs =
+                            (currentConsumption?.totalCarbs) ?? 0;
+                        double currentFats =
+                            (currentConsumption?.totalFats) ?? 0;
+
+                        // Assuming 'calories' is your daily calorie goal
+                        double calorieGoal =
+                            calories ?? 2000; // Default goal if not set
+
+                        // Create the Nutrition Card with the updated data
                         return NutritionCard(
                           nutritionalData: snapshot.data,
-                          calories: calories,
-                          protein: protein,
-                          carbs: carbs,
-                          fat: fat,
+                          currentCalories: currentCalories,
+                          calories: calorieGoal,
+                          protein: currentProtein,
+                          carbs: currentCarbs,
+                          fat: currentFats,
                           onTap: () {
                             Navigator.push(
                               context,
@@ -252,6 +399,7 @@ class _NutritionScreenState extends State<nutrition_screen> {
                       },
                     ),
                   ),
+
                   SizedBox(height: 10),
 
                   // CARD 3 'LOG MEAL' BUTTON
@@ -266,7 +414,7 @@ class _NutritionScreenState extends State<nutrition_screen> {
                             info: '',
                             imageUrl: '',
                             cardWidth: 160,
-                            showIcon: false,
+                            iconType: InfoCardIconType.none,
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -274,11 +422,14 @@ class _NutritionScreenState extends State<nutrition_screen> {
                                   builder: (context) =>
                                       const LogFoodConsumption(),
                                 ),
-                              );
+                              ).then((_) {
+                                fetchCurrentConsumption();
+                              });
                             },
                           ),
                         ),
                       ),
+
                       SizedBox(
                         width: 20,
                       ),
@@ -292,7 +443,7 @@ class _NutritionScreenState extends State<nutrition_screen> {
                             info: '',
                             imageUrl: '',
                             cardWidth: 160,
-                            showIcon: false,
+                            iconType: InfoCardIconType.none,
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -315,9 +466,7 @@ class _NutritionScreenState extends State<nutrition_screen> {
       ),
 
       drawer: Settings_Drawer(
-        onSettingsTap: () {
-          // Navigate to settings screen (optional: can implement additional logic if needed)
-        },
+        onSettingsTap: () {},
       ),
     );
   }

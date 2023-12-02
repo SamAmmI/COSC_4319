@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,15 +17,69 @@ class recipe_screen extends StatefulWidget {
 
 class _recipeScreenState extends State<recipe_screen> {
   List<RecipeModel> recipes = <RecipeModel>[];
-  TextEditingController textEditingController = TextEditingController();
 
   String applicationId = "c25df61e";
   String applicationKey = "eaf1f2fc95e4c096ab81c799330e585b";
 
-  getRecipes(String query) async {
-    //query here is the main thing you change to get different food, but when you search it doesn't delete your last searched entry.
+  Future<void> getRecipes() async {
+  // Get the current user
+  User? currentUser = FirebaseAuth.instance.currentUser;
+
+  if (currentUser != null) {
+    // Get foodItems collection for the current user
+    CollectionReference foodItemsRef = FirebaseFirestore.instance.collection('users').doc(currentUser.uid).collection('foodItems');
+
+    // Get all foodItem documents
+    QuerySnapshot foodItemsSnapshot = await foodItemsRef.get();
+    List<QueryDocumentSnapshot> allFoodItems = foodItemsSnapshot.docs;
+
+    for (QueryDocumentSnapshot foodItem in allFoodItems) {
+      // Get label field from each foodItem document
+      String label = foodItem.get('label');
+
+      String url =
+          "https://api.edamam.com/search?q=$label&app_id=$applicationId&app_key=$applicationKey";
+
+      var response = await http.get(Uri.parse(url));
+      Map<String, dynamic> jsonData = jsonDecode(response.body);
+
+      jsonData["hits"].forEach((element) {
+        print(element.toString());
+
+        RecipeModel recipeModel = RecipeModel();
+        recipeModel = RecipeModel.fromMap(element["recipe"]);
+        recipes.add(recipeModel);
+      });
+
+      print("${recipes.toString()}");
+      print(label);
+    }
+  }
+}
+  Future<void> getRecipesTogether() async {
+  // Get the current user
+  // Get the current user
+  User? currentUser = FirebaseAuth.instance.currentUser;
+
+  if (currentUser != null) {
+    // Get foodItems collection for the current user
+    CollectionReference foodItemsRef = FirebaseFirestore.instance.collection('users').doc(currentUser.uid).collection('foodItems');
+
+    // Get all foodItem documents
+    QuerySnapshot foodItemsSnapshot = await foodItemsRef.get();
+    List<QueryDocumentSnapshot> allFoodItems = foodItemsSnapshot.docs;
+
+    // Save all foodItems into one string separated by commas
+    List<String> labels = [];
+    for (QueryDocumentSnapshot foodItem in allFoodItems) {
+      // Get label field from each foodItem document
+      String label = foodItem.get('label');
+      labels.add(label);
+    }
+    String labelsString = labels.join(',');
+
     String url =
-        "https://api.edamam.com/search?q=$query&app_id=$applicationId&app_key=$applicationKey";
+        "https://api.edamam.com/search?q=$labelsString&app_id=$applicationId&app_key=$applicationKey";
 
     var response = await http.get(Uri.parse(url));
     Map<String, dynamic> jsonData = jsonDecode(response.body);
@@ -36,8 +92,8 @@ class _recipeScreenState extends State<recipe_screen> {
       recipes.add(recipeModel);
     });
 
-    setState(() {});
     print("${recipes.toString()}");
+  }
   }
 
   @override
@@ -60,11 +116,6 @@ class _recipeScreenState extends State<recipe_screen> {
             Container(
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [
-                Color.fromARGB(255, 33, 80, 45),
-                Color.fromARGB(255, 18, 63, 42),
-              ])),
             ),
             SingleChildScrollView(
               child: Container(
@@ -78,16 +129,10 @@ class _recipeScreenState extends State<recipe_screen> {
                           : MainAxisAlignment.center,
                       children: <Widget>[
                         Text("PanTree ",
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white)),
+                            style: Theme.of(context).textTheme.titleLarge),
                         Text(
                           "Recipes Search",
-                          style: TextStyle(
-                              color: Color.fromARGB(255, 20, 155, 15),
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500),
+                          style: Theme.of(context).textTheme.titleLarge
                         )
                       ],
                     ),
@@ -95,8 +140,8 @@ class _recipeScreenState extends State<recipe_screen> {
                       height: 30,
                     ),
                     Text(
-                      "Enter Your Ingredients Below",
-                      style: TextStyle(fontSize: 20, color: Colors.white),
+                      "Click the search icons below for suggested recipes",
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     SizedBox(
                       height: 8,
@@ -108,34 +153,62 @@ class _recipeScreenState extends State<recipe_screen> {
                       width: MediaQuery.of(context).size.width,
                       child: Row(
                         children: <Widget>[
-                          Expanded(
-                            child: TextField(
-                              controller: textEditingController,
-                              decoration: InputDecoration(
-                                  hintText: "Enter Ingredients",
-                                  hintStyle: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white.withOpacity(0.5),
-                                  )),
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
                           SizedBox(
                             width: 16,
                           ),
                           InkWell(
                             onTap: () {
-                              if (textEditingController.text.isNotEmpty) {
-                                getRecipes(textEditingController.text);
-                              }
+                                setState(() {
+                                  getRecipes();
+                                });
+                            },
+                            child: Container(
+                              child: Row(
+                                children: <Widget>[
+                                Icon(
+                                  Icons.search,
+                                ),
+                                SizedBox(width: 1), // You can adjust this value as needed
+                              Text(
+                              'Individual Search',
+                              style: Theme.of(context).textTheme.bodyMedium
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 15),
+                          InkWell(
+                            onTap: () {
+                                setState(() {
+                                  getRecipesTogether();
+                                });
+                            },
+                            child: Container(
+                              child: Row(
+                                children: <Widget>[
+                                Icon(
+                                  Icons.search,
+                                ),
+                                SizedBox(width: 1), // You can adjust this value as needed
+                              Text(
+                              'Grouped Search',
+                              style: Theme.of(context).textTheme.bodyMedium
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 10,),
+                          InkWell(
+                            onTap:() {
+                              setState(() {
+                                recipes.clear();
+                              });
                             },
                             child: Container(
                               child: Icon(
-                                Icons.search,
-                                color: Colors.white,
+                                Icons.refresh,
                               ),
                             ),
                           )
@@ -169,7 +242,7 @@ class _recipeScreenState extends State<recipe_screen> {
             ),
           ],
         ));
-  }
+ }
 }
 
 class RecipieTile extends StatefulWidget {
